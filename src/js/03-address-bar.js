@@ -25,6 +25,22 @@
     inputBox.append(plainEl);
   }
 
+  const TITLE_ONLY_PREF = "zia.urlbar.title-only";
+
+  function titleOnly() {
+    try {
+      return Services.prefs.getBoolPref(TITLE_ONLY_PREF, false);
+    } catch (err) {
+      return false;
+    }
+  }
+
+  function watchTitleOnly() {
+    const apply = () => updateTitle();
+    Services.prefs.addObserver(TITLE_ONLY_PREF, apply);
+    window.addEventListener("unload", () => Services.prefs.removeObserver(TITLE_ONLY_PREF, apply));
+  }
+
   function updateTitle() {
     if (!titleEl) {
       return;
@@ -69,10 +85,16 @@
     } catch (err) {
       isHomePage = false;
     }
-    titleEl.firstChild.textContent = host;
-
     const hasTitle = /[\p{L}\p{N}]/u.test(title);
-    titleEl.lastChild.textContent = !isHomePage && hasTitle && title !== host ? ` / ${title}` : "";
+    // Title only (an option): the title alone, in the domain's place and
+    // colour, even on a site's home page; a page with none shows its domain
+    if (titleOnly() && hasTitle) {
+      titleEl.firstChild.textContent = title;
+      titleEl.lastChild.textContent = "";
+    } else {
+      titleEl.firstChild.textContent = host;
+      titleEl.lastChild.textContent = !isHomePage && hasTitle && title !== host ? ` / ${title}` : "";
+    }
 
     if (plainEl) {
       let path = "";

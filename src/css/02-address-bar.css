@@ -292,6 +292,26 @@
   opacity: 0 !important;
 }
 
+/* Optionally, the closed bar shows only the page's title, in the domain's
+   colour (zia.uc.js), and keeps it on hover: the address shows once clicked */
+@media -moz-pref("zia.urlbar.title-only") {
+  #zia-url-title .zia-url-title-host {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  #urlbar[zia-has-title="true"]:hover:not([focused]):not([breakout-extend]) {
+    & #zia-url-title {
+      display: flex;
+    }
+
+    & #zia-url-plain {
+      display: none;
+    }
+  }
+}
+
 #urlbar :is(.urlbar-input, #zia-url-title, #zia-url-title span, #zia-url-plain, #zia-url-plain span) {
   font-weight: var(--zia-tab-weight) !important;
 }
