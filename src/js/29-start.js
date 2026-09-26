@@ -277,6 +277,7 @@
     safely("registerPdfActor", registerPdfActor);
     safely("watchScrollInput", watchScrollInput);
     safely("createTitleElement", createTitleElement);
+    safely("watchTitleOnly", watchTitleOnly);
     safely("addDownloadProgress", addDownloadProgress);
     ifOn("icon-picker", "addIconPicker", addIconPicker);
     safely("watchCompactTopRow", watchCompactTopRow);

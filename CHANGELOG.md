@@ -4,6 +4,16 @@ Every release of Zia, newest first. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.62.0] — 2026-09-26
+
+### Added
+
+- A setting to hide the window buttons (minimise, maximise, close) on
+  Windows and Linux, for anyone who uses the keyboard for those (off by
+  default).
+- A setting for the address bar to show only the page's title, in the
+  domain's colour, until it's clicked (off by default).
+
 ## [2.61.4] — 2026-09-26
 
 ### Fixed

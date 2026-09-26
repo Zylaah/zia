@@ -120,6 +120,12 @@
     "defaultValue": true
   },
   {
+    "type": "checkbox",
+    "label": "Hide the window buttons (minimise, maximise, close) on Windows and Linux, for keyboard users",
+    "property": "zia.window-buttons.hide",
+    "defaultValue": false
+  },
+  {
     "type": "separator",
     "label": "Address bar"
   },
@@ -140,6 +146,12 @@
     "label": "Address bar pop-up is slightly see-through, with the page blurred behind it",
     "property": "zia.urlbar.pop-up-blur",
     "defaultValue": true
+  },
+  {
+    "type": "checkbox",
+    "label": "Address bar shows only the page's title, in the domain's colour, until clicked",
+    "property": "zia.urlbar.title-only",
+    "defaultValue": false
   },
   {
     "type": "dropdown",

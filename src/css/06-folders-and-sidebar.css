@@ -143,6 +143,16 @@
   margin-bottom: 0 !important;
 }
 
+/* Optionally, no minimise, maximise and close at all (on Windows and Linux),
+   wherever they sit, for anyone who uses the keyboard for those */
+@media not (-moz-platform: macos) {
+  @media -moz-pref("zia.window-buttons.hide") {
+    .titlebar-buttonbox-container {
+      display: none !important;
+    }
+  }
+}
+
 :root[zen-sidebar-expanded="true"] #tabbrowser-tabs {
   --tab-min-height: var(--zia-tab-height) !important;
   --tab-margin-block: var(--zia-tab-gap) !important;
