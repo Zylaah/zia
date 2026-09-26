@@ -11,6 +11,12 @@
   },
   {
     "type": "checkbox",
+    "label": "Music player card stays when you send its video to picture-in-picture",
+    "property": "zia.media.keep-with-pip",
+    "defaultValue": true
+  },
+  {
+    "type": "checkbox",
     "label": "Find in page bar",
     "property": "zia.features.find-bar",
     "defaultValue": true

@@ -4,6 +4,14 @@ Every release of Zia, newest first. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.63.0] — 2026-09-26
+
+### Added
+
+- The music player card stays when its video goes picture-in-picture (from
+  the card's own button or anywhere else), still showing and controlling
+  it: a setting, on by default (off: the card goes away, as before).
+
 ## [2.62.0] — 2026-09-26
 
 ### Added
