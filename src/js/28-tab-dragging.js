@@ -288,8 +288,8 @@
       if (folder && drag.moving.contains?.(folder)) {
         folder = null;
       }
-      // a folder is only ever moved among the rows, never into a folder
-      if (drag.folder) {
+      // a folder goes into another only where Zen allows that deep
+      if (drag.folder && folder && !canNest(drag.folder, folder)) {
         folder = null;
         atEnd = false;
       }
@@ -415,7 +415,74 @@
       return anyFolder ? folderBox(anyFolder) : null;
     };
 
+    // A dragged folder narrows the same way over a folder it would go into,
+    // to the width of the folders already inside one (its margins, eased)
+    const morphFolderWidth = (into) => {
+      const moving = drag.folder;
+      const key = into || "plain";
+      if (drag.widthKey === key) {
+        return;
+      }
+      drag.widthKey = key;
+      if (!drag.folderBase) {
+        const style = getComputedStyle(moving);
+        drag.folderBase = {
+          box: folderBox(moving),
+          start: parseFloat(style.marginInlineStart) || 0,
+          end: parseFloat(style.marginInlineEnd) || 0,
+        };
+      }
+      const base = drag.folderBase;
+      // (back among the rows it started in, it's its own width again)
+      const startedIn = moving.parentElement?.closest?.("zen-folder, tab-group:not([split-view-group])") || null;
+      const want = into || startedIn ? widthFor(into) : null;
+      let start = want ? want.left - base.box.left : 0;
+      let end = want ? base.box.right - want.right : 0;
+      if (Math.abs(start) > 60 || Math.abs(end) > 60) {
+        start = 0;
+        end = 0;
+      }
+      moving.setAttribute("zia-morph-folder", "true");
+      // eased frame by frame (the drag's own rules turn transitions off)
+      const from = drag.folderShown || { start: base.start, end: base.end };
+      const to = { start: base.start + start, end: base.end + end };
+      const began = performance.now();
+      const id = (drag.folderMorphId = (drag.folderMorphId || 0) + 1);
+      const draw = (at) => {
+        moving.style.setProperty("margin-inline-start", `${at.start}px`, "important");
+        moving.style.setProperty("margin-inline-end", `${at.end}px`, "important");
+        if (drag) {
+          drag.folderShown = at;
+        }
+      };
+      const step = (now) => {
+        if (!drag || drag.folder !== moving || drag.folderMorphId !== id || !moving.hasAttribute("zia-morph-folder")) {
+          return;
+        }
+        const t = Math.min(1, (now - began) / 140);
+        const k = 1 - Math.pow(1 - t, 3);
+        draw({ start: from.start + (to.start - from.start) * k, end: from.end + (to.end - from.end) * k });
+        if (t < 1) {
+          requestAnimationFrame(step);
+        }
+      };
+      requestAnimationFrame(step);
+    };
+    const unmorphFolder = (folder) => {
+      if (!folder?.hasAttribute?.("zia-morph-folder")) {
+        return;
+      }
+      folder.removeAttribute("zia-morph-folder");
+      for (const name of ["margin-inline-start", "margin-inline-end"]) {
+        folder.style.removeProperty(name);
+      }
+    };
+
     const morphWidth = (folder) => {
+      if (drag.folder) {
+        morphFolderWidth(folder);
+        return;
+      }
       const key = folder || "plain";
       if (drag.widthKey === key || !drag.bg) {
         return;
@@ -776,6 +843,15 @@
     // slid about is often a closed folder it then nests it in. Straight
     // after, the folder is put where Zia showed it: among the rows, before
     // the one it was shown above, and never inside another folder.
+    // Zen's own limit on how deep folders go
+    const canNest = (folder, into) => {
+      try {
+        const inside = into.querySelector(":scope > .tab-group-container > .tabbrowser-tab") || into.labelElement || into;
+        return window.gZenFolders?.canDropElement?.(folder, inside) ?? true;
+      } catch (err) {
+        return true;
+      }
+    };
     const outermostRow = (node) => {
       let row = topLevel({ node });
       for (let up = row.parentElement?.closest?.("zen-folder"); up; up = up.parentElement?.closest?.("zen-folder")) {
@@ -788,14 +864,45 @@
         return;
       }
       const nestedIn = folder.parentElement?.closest?.("zen-folder") || null;
-      const next = target.next && target.sameNext && !target.below ? outermostRow(target.next.node) : null;
-      if (next && next !== folder && !folder.contains(next)) {
-        placeBefore(folder, next);
-      } else if (currentSeparator()) {
-        placeBefore(folder, currentSeparator());
-      }
-      if (folder.parentElement?.closest?.("zen-folder")) {
-        console.warn("[Zia] The dropped folder is still inside another folder");
+      const into = target.folder?.isConnected && target.folder !== folder && !folder.contains(target.folder) ? target.folder : null;
+      if (into) {
+        // Dropped where Zia showed it inside a folder: there, before the row
+        // it was shown above (at the end, if none or the folder is closed)
+        const box = into.querySelector(":scope > .tab-group-container");
+        let next = !target.atEnd && !isCollapsed(into) && target.next && into.contains(target.next.node) ? target.next.node : null;
+        while (next && next.parentElement !== box) {
+          next = next.parentElement;
+        }
+        if (next && next !== folder) {
+          placeBefore(folder, next);
+        } else if (box) {
+          const last = [...box.children].reverse().find((item) => item !== folder && (gBrowser.isTab(item) || isFolderEl(item)));
+          if (last) {
+            placeAfter(folder, last);
+          }
+          if (folder.parentElement !== box) {
+            box.appendChild(folder);
+          }
+        }
+        // a closed one keeps showing only its open tab
+        if (isCollapsed(into)) {
+          try {
+            window.gZenFolders?.on_TabGroupCollapse?.({ target: into });
+          } catch (err) {
+            noteError("tab dragging: folder into a closed folder", err);
+          }
+          jumpToEnd(into);
+        }
+      } else {
+        const next = target.next && target.sameNext && !target.below ? outermostRow(target.next.node) : null;
+        if (next && next !== folder && !folder.contains(next)) {
+          placeBefore(folder, next);
+        } else if (currentSeparator()) {
+          placeBefore(folder, currentSeparator());
+        }
+        if (folder.parentElement?.closest?.("zen-folder")) {
+          console.warn("[Zia] The dropped folder is still inside another folder");
+        }
       }
       // a closed folder it was taken back out of fits its new contents
       if (nestedIn && nestedIn !== folder.parentElement?.closest?.("zen-folder") && isCollapsed(nestedIn)) {
@@ -2550,6 +2657,15 @@
         droppedFrom = { node: drag.moving, top: from.top, left: from.left, tab: drag.tab, bg, bgLeft: bg?.getBoundingClientRect().left };
       }
       essentialDropped = null;
+      if (drag?.folder) {
+        const dropped = drag.folder;
+        // (a landing one goes just before its glide, which measures it)
+        setTimeout(() => {
+          if (!dropped.hasAttribute("zia-landing")) {
+            unmorphFolder(dropped);
+          }
+        }, 0);
+      }
       if (drag?.bg) {
         const { bg, content } = drag;
         setTimeout(() => requestAnimationFrame(() => unmorphWidth(droppedTab, bg, content)), 0);
@@ -2634,6 +2750,7 @@
           if (landing.bg) {
             unmorphWidth(landing.tab);
           }
+          unmorphFolder(node);
           const to = node.getBoundingClientRect();
           const dy = landing.top - to.top;
           const dx = landing.bg?.isConnected ? landing.bgLeft - landing.bg.getBoundingClientRect().left : landing.left - to.left;
