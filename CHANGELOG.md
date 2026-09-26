@@ -4,6 +4,15 @@ Every release of Zia, newest first. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Fixed
+
+- An essential dragged back into the list no longer leaves a duplicate row
+  where it was dropped, showing when the tab is hovered and gone at the next
+  click: Zen took the tile Zia draws during the drag for a real tab, and put
+  it back in the list after the drop.
+
 ## [2.61.2] — 2026-09-26
 
 ### Fixed
