@@ -4,6 +4,15 @@ Every release of Zia, newest first. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.61.4] — 2026-09-26
+
+### Fixed
+
+- The first essential dragged back into the list after a restart can be
+  closed again (and so can the window): the tile Zia draws during the drag
+  stayed in the browser's list of tabs after it was removed, and closing
+  failed trying to switch to it.
+
 ## [2.61.3] — 2026-09-26
 
 ### Fixed
