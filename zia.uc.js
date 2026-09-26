@@ -9313,6 +9313,22 @@
     let landingTab = null;
     const PROXY_MS = 140;
 
+    // The copies a drag shows are clones of the tab, so Zen can take one for
+    // a real tab: taking an essential out of the essentials mid-drag, it moved
+    // the copy into the list too, and after the drop put it back there (a
+    // duplicate row where the tab was let go, until the next click). A copy
+    // is live from when it's made until it's removed; one put back after
+    // that is taken straight out again (see the watch after sweepLeftovers)
+    const liveCopies = new WeakSet();
+    const trackCopy = (node) => {
+      liveCopies.add(node);
+      node.remove = function () {
+        liveCopies.delete(this);
+        Element.prototype.remove.call(this);
+      };
+      return node;
+    };
+
     let roomFor = null;
     const makeRoom = (container) => {
       if (roomFor === container) {
@@ -9392,7 +9408,7 @@
         if (!host || !drag?.tab) {
           return;
         }
-        proxy = drag.tab.cloneNode(true);
+        proxy = trackCopy(drag.tab.cloneNode(true));
         proxy.removeAttribute("id");
         for (const name of [
           "zia-dragging", "zia-shift", "zia-drop-lock", "zia-to-essential", "multiselected", "dragtarget", "pending-drag",
@@ -10223,6 +10239,15 @@
         sweepLeftovers();
       }
     }, true);
+    new MutationObserver((records) => {
+      for (const record of records) {
+        for (const node of record.addedNodes) {
+          if (node.nodeType === 1 && node.hasAttribute("zia-essential-proxy") && !liveCopies.has(node)) {
+            Element.prototype.remove.call(node);
+          }
+        }
+      }
+    }).observe(document.getElementById("navigator-toolbox") || document.documentElement, { childList: true, subtree: true });
 
     window.addEventListener("mousemove", (event) => {
       if (essentialDrag && event.buttons === 0 && Date.now() - (essentialDrag.startedAt || 0) > 300) {
@@ -10250,7 +10275,7 @@
       sweepLeftovers();
       const tile = tab.getBoundingClientRect();
       const drawn = tab.querySelector(".tab-background")?.getBoundingClientRect() || tile;
-      const copy = tab.cloneNode(true);
+      const copy = trackCopy(tab.cloneNode(true));
       copy.removeAttribute("id");
       // (and what a drop just before left on the tile: a lock that pins
       // position, so the copy stuck where it started and the drag was
