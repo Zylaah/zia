@@ -9320,11 +9320,24 @@
     // is live from when it's made until it's removed; one put back after
     // that is taken straight out again (see the watch after sweepLeftovers)
     const liveCopies = new WeakSet();
+    // Once in the list, the copy was also in the browser's remembered list
+    // of tabs, which a removal doesn't refresh: closing the selected tab
+    // then picked the copy (no page behind it) to switch to, failed, and the
+    // tab (or the window) wouldn't close until another tab was chosen
+    const dropCopy = (node) => {
+      liveCopies.delete(node);
+      Element.prototype.remove.call(node);
+      try {
+        gBrowser.tabContainer._invalidateCachedTabs?.();
+        gBrowser.tabContainer._invalidateCachedVisibleTabs?.();
+      } catch (err) {
+        noteError("tab dragging: forget the copy", err);
+      }
+    };
     const trackCopy = (node) => {
       liveCopies.add(node);
       node.remove = function () {
-        liveCopies.delete(this);
-        Element.prototype.remove.call(this);
+        dropCopy(this);
       };
       return node;
     };
@@ -10243,7 +10256,7 @@
       for (const record of records) {
         for (const node of record.addedNodes) {
           if (node.nodeType === 1 && node.hasAttribute("zia-essential-proxy") && !liveCopies.has(node)) {
-            Element.prototype.remove.call(node);
+            dropCopy(node);
           }
         }
       }
