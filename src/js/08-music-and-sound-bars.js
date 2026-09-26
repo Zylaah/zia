@@ -658,6 +658,59 @@
     return [...artwork].sort((x, y) => area(y) - area(x))[0]?.src || "";
   }
 
+  // Zen puts the card away while its video is in picture-in-picture (so
+  // pressing the card's own picture-in-picture button took the card with
+  // it). With this option on (the default), the card stays: picture-in-
+  // picture opens as usual and the card goes on showing and controlling it.
+  const KEEP_WITH_PIP_PREF = "zia.media.keep-with-pip";
+
+  function keepWithPip() {
+    try {
+      return Services.prefs.getBoolPref(KEEP_WITH_PIP_PREF, true);
+    } catch (err) {
+      return true;
+    }
+  }
+
+  function keepCardsWithPip() {
+    const front = window.gZenMediaController?.frontCard;
+    const proto = front && Object.getPrototypeOf(front);
+    const desc = proto && Object.getOwnPropertyDescriptor(proto, "shouldBeVisible");
+    if (!desc?.get) {
+      return false;
+    }
+    if (desc.get.__zia) {
+      return true;
+    }
+    const original = desc.get;
+    const patched = function () {
+      try {
+        // (fullscreen is Zen's to decide, as before)
+        if (keepWithPip() && !this.isSharing && this.controller?.isBeingUsedInPIPModeOrFullscreen && !document.fullscreenElement && !window.fullScreen) {
+          return gBrowser.selectedBrowser.browserId !== this.browser.browserId;
+        }
+      } catch (err) {
+        noteError("music and sound bars: keepCardsWithPip", err);
+      }
+      return original.call(this);
+    };
+    patched.__zia = true;
+    Object.defineProperty(proto, "shouldBeVisible", { ...desc, get: patched });
+
+    const refreshCards = () => {
+      for (const element of document.querySelectorAll("#zen-media-controls-toolbar .zen-media-card")) {
+        try {
+          element.__ziaCard?.refreshVisibility?.();
+        } catch (err) {
+          noteError("music and sound bars: keepCardsWithPip (2)", err);
+        }
+      }
+    };
+    Services.prefs.addObserver(KEEP_WITH_PIP_PREF, refreshCards);
+    window.addEventListener("unload", () => Services.prefs.removeObserver(KEEP_WITH_PIP_PREF, refreshCards));
+    return true;
+  }
+
   function useMediaArtwork() {
     const front = window.gZenMediaController?.frontCard;
     const proto = front && Object.getPrototypeOf(front);
@@ -734,10 +787,14 @@
     }
     let frame = null;
     let artworkReady = false;
+    let keptWithPip = false;
     const refresh = () => {
       frame = null;
       if (!artworkReady) {
         artworkReady = useMediaArtwork();
+      }
+      if (!keptWithPip) {
+        keptWithPip = keepCardsWithPip();
       }
       for (const card of toolbar.querySelectorAll(".zen-media-card")) {
         updateCardGlow(card);
