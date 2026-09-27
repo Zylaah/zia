@@ -139,7 +139,7 @@
 #reload-button::before {
   background-image: url("chrome://sine/content/zia/icons/reload-arc.svg");
   transform-origin: 50% calc(50% + 1px);
-  mask: conic-gradient(from 90deg at 50% calc(50% + 1px), #000 calc(301.6deg - var(--zia-reload-cut) * 1.35), transparent 0);
+  mask: conic-gradient(from 90deg at 50% calc(50% + 1px), #000 calc(282.6deg - var(--zia-reload-cut) * 1.35), transparent 0);
 }
 
 #reload-button::after {
