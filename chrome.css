@@ -4754,7 +4754,11 @@ zen-folder .tab-reset-button {
 }
 
 /* Reload: the arc (::before) and the arrowhead (::after) both turn about
-   the circle's centre, 1px below the middle of the icon. */
+   the circle's centre, 1px below the middle of the icon. The arc runs on
+   into the arrowhead and shortens exactly as far as the head turns back,
+   so the two always meet; the head leaves out the stretch of arc under it
+   (the same in its own turned frame, as the arc is a circle about that
+   centre), so the translucent icon colour isn't laid down twice there. */
 #reload-button {
   /* eased by springReloadHover(), as Zen's chrome sheets can't transition
      a custom property */
@@ -4764,13 +4768,17 @@ zen-folder .tab-reset-button {
 #reload-button::before {
   background-image: url("chrome://sine/content/zia/icons/reload-arc.svg");
   transform-origin: 50% calc(50% + 1px);
-  mask: conic-gradient(from 90deg at 50% calc(50% + 1px), #000 calc(282.6deg - var(--zia-reload-cut) * 1.35), transparent 0);
+  mask: conic-gradient(from 90deg at 50% calc(50% + 1px), #000 calc(301.2deg - var(--zia-reload-cut)), transparent 0);
 }
 
 #reload-button::after {
   background-image: url("chrome://sine/content/zia/icons/reload-head.svg");
   transform-origin: 50% calc(50% + 1px);
   rotate: calc(var(--zia-reload-cut) * -1);
+  mask:
+    linear-gradient(#000 0 0),
+    url("chrome://sine/content/zia/icons/reload-arc-mask.svg") center / 16px no-repeat;
+  mask-composite: exclude;
 }
 
 /* Reload to stop */
