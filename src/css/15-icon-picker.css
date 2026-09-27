@@ -4,6 +4,12 @@
   visibility: visible !important;
 }
 
+/* With icons only, Zen makes its tab unclickable (it's the only page);
+   beside Zia's tab it's the way back */
+#PanelUI-zen-emojis-picker[only-svg-icons="true"] #PanelUI-zen-emojis-picker-change-svg {
+  pointer-events: auto !important;
+}
+
 #zia-icons-page {
   display: flex;
   flex-direction: column;

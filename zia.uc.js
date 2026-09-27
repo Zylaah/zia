@@ -11729,20 +11729,17 @@
     }
     const shown = anchor?.isConnected && anchor.getBoundingClientRect().width > 0;
     const at = shown ? anchor : document.getElementById("unified-extensions-button") || document.getElementById("nav-bar");
-    let pick = null;
+    // The picker stays open, and each icon clicked is tried on straight away
+    const onSelect = (url) => {
+      if (typeof url === "string" && /^(chrome|resource):/.test(url)) {
+        setExtIcon(id, { url, own: false, uploaded: false });
+      }
+    };
     try {
-      pick = icons.open(at, { onlySvgIcons: true, allowNone: false });
+      Promise.resolve(icons.open(at, { onlySvgIcons: true, allowNone: false, closeOnSelect: false, onSelect })).catch(() => {});
     } catch (err) {
       noteError("extension icons: open the picker", err);
     }
-    Promise.resolve(pick).then(
-      (url) => {
-        if (typeof url === "string" && /^(chrome|resource):/.test(url)) {
-          setExtIcon(id, { url, own: false, uploaded: false });
-        }
-      },
-      () => {}
-    );
   }
 
   // Which extensions change their icon: seen when the image Firefox gives
