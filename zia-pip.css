@@ -35,7 +35,7 @@
   display: none !important;
 }
 
-:root[zia-dia] .control-item:not(.zia-pip-tuck-button)::after {
+:root[zia-dia] .control-item:not(.zia-pip-tuck-button, .zia-pip-minimise)::after {
   display: none !important;
 }
 
@@ -119,6 +119,11 @@
   background-image: url("chrome://sine/content/zia/icons/pip/close.svg");
 }
 
+/* Minimise: away, still playing in its tab (zia-pip.js) */
+#controls .zia-pip-minimise::before {
+  background-image: url("chrome://sine/content/zia/icons/pip/minimise.svg");
+}
+
 #controls .zia-pip-host {
   overflow: hidden;
   text-overflow: ellipsis;
@@ -130,10 +135,32 @@
   pointer-events: none !important;
 }
 
-/* small windows: drop the site, then the pill labels */
-@media (max-width: 439px) {
+/* small windows: drop the site and Minimise's word, then the pill labels */
+@media (max-width: 459px) {
   #controls .zia-pip-host {
     visibility: hidden;
+  }
+
+  #controls .zia-pip-minimise {
+    position: relative;
+    width: 27px;
+    padding: 0;
+    justify-content: center;
+    font-size: 0;
+  }
+
+  #controls .zia-pip-minimise:is(:hover, :focus-visible)::after {
+    content: "Minimise · keeps playing";
+    position: absolute;
+    top: calc(100% + 6px);
+    right: 0;
+    padding: 4px 8px;
+    border-radius: 6px;
+    background: rgba(0, 0, 0, 0.75);
+    color: #fff;
+    font: 500 12px/16px -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    white-space: nowrap;
+    pointer-events: none;
   }
 }
 
@@ -153,7 +180,7 @@
 }
 
 /* With Firefox's look, only the tuck button, top centre */
-:root:not([zia-dia]) #controls :is(.zia-pip-back, .zia-pip-close, .zia-pip-host) {
+:root:not([zia-dia]) #controls :is(.zia-pip-back, .zia-pip-minimise, .zia-pip-close, .zia-pip-host) {
   display: none;
 }
 
@@ -410,42 +437,8 @@
 }
 
 /* Nowhere to tuck on this screen (other screens all round) */
-:root[zia-no-tuck] #controls :is(.zia-pip-tuck-button, .zia-pip-pick-button) {
+:root[zia-no-tuck] #controls .zia-pip-tuck-button {
   display: none !important;
-}
-
-/* Beside it, a small arrow opens the picker */
-#controls .zia-pip-pick-button {
-  display: none;
-  position: relative;
-  width: 20px;
-  padding: 0;
-  justify-content: center;
-  margin-inline-start: -4px;
-}
-
-:root[zia-tuck-on] #controls .zia-pip-pick-button {
-  display: inline-flex;
-}
-
-#controls .zia-pip-pick-button::before {
-  background-image: url("chrome://sine/content/zia/icons/pip/chevron.svg");
-  rotate: -90deg;
-  scale: 0.8;
-}
-
-#controls .zia-pip-pick-button:is(:hover, :focus-visible)::after {
-  content: attr(tooltip);
-  position: absolute;
-  top: calc(100% + 6px);
-  right: 0;
-  padding: 4px 8px;
-  border-radius: 6px;
-  background: rgba(0, 0, 0, 0.75);
-  color: #fff;
-  font: 500 12px/16px -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
-  white-space: nowrap;
-  pointer-events: none;
 }
 
 /* The picker: a map of the screen with its five spots */

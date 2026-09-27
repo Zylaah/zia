@@ -4,6 +4,18 @@ Every release of Zia, newest first. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- Picture-in-picture has a Minimise button beside Close: it puts the window
+  away and the video keeps playing in its tab (Close still stops it).
+
+### Changed
+
+- Picture-in-picture: where the window tucks is chosen by right-clicking
+  the tuck button, instead of from the small arrow that sat beside it.
+
 ## [2.64.0] — 2026-09-27
 
 ### Changed
