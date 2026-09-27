@@ -113,10 +113,47 @@
     }
   };
 
+  // Rounded corners on Windows, as macOS gives the window: Firefox rounds
+  // only its own frosted pop-ups there, so Zia asks Windows itself (11 and
+  // later; Windows 10 has no rounded windows and ignores it)
+  let roundedCorners = null;
+  const roundCorners = (on) => {
+    if (Services.appinfo.OS !== "WINNT" || roundedCorners === on) {
+      return;
+    }
+    let dwm = null;
+    try {
+      const { ctypes } = ChromeUtils.importESModule("resource://gre/modules/ctypes.sys.mjs");
+      const handle = window.docShell.treeOwner.QueryInterface(Ci.nsIBaseWindow).nativeHandle;
+      if (!handle) {
+        return;
+      }
+      dwm = ctypes.open("dwmapi.dll");
+      const setAttribute = dwm.declare(
+        "DwmSetWindowAttribute",
+        ctypes.winapi_abi,
+        ctypes.long,
+        ctypes.voidptr_t,
+        ctypes.uint32_t,
+        ctypes.voidptr_t,
+        ctypes.uint32_t
+      );
+      const DWMWA_WINDOW_CORNER_PREFERENCE = 33;
+      const corner = ctypes.uint32_t(on ? 2 : 0); // round, or Windows' default
+      setAttribute(ctypes.voidptr_t(ctypes.UInt64(handle)), DWMWA_WINDOW_CORNER_PREFERENCE, corner.address(), 4);
+      roundedCorners = on;
+    } catch (err) {
+      console.debug("[Zia] picture-in-picture: rounded corners", err);
+    } finally {
+      dwm?.close();
+    }
+  };
+
   const applyPrefs = () => {
     root.toggleAttribute("zia-dia", pref("zia.pip.dia-style", true));
     placeSound(root.hasAttribute("zia-dia"));
     root.toggleAttribute("zia-tuck-on", pref("zia.pip.tuck", true));
+    roundCorners(root.hasAttribute("zia-dia"));
   };
   applyPrefs();
   Services.prefs.addObserver("zia.pip.", applyPrefs);

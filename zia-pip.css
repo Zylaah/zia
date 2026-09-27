@@ -336,6 +336,11 @@
   pointer-events: auto;
 }
 
+/* Live streams have no progress line, so sound sits down where it was */
+:root[zia-dia][zia-live] #controls .zia-pip-sound {
+  bottom: 8px;
+}
+
 :root[zia-dia] #audio {
   width: 28px !important;
   min-width: 0 !important;
