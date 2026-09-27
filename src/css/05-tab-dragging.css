@@ -110,8 +110,13 @@ zen-essentials-promo {
 
 .zen-essentials-container > vbox:not(.tabbrowser-tab) {
   min-height: var(--zia-essential-height);
-  min-width: var(--zia-essential-min-width);
-  max-width: var(--zia-essential-max-width);
+}
+
+@media -moz-pref("zia.essentials.zia-width") {
+  .zen-essentials-container > vbox:not(.tabbrowser-tab) {
+    min-width: var(--zia-essential-min-width);
+    max-width: var(--zia-essential-max-width);
+  }
 }
 
 .tabbrowser-tab[zen-essential][zia-essential-dragged] {

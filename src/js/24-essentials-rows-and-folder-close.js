@@ -2,6 +2,8 @@
   // The grid can't span "to the end of the row" by itself, so Zia counts the
   // columns and sets the span.
   const FILL_ROW_PREF = "zia.essentials.fill-row";
+  // Zia's narrower essentials (off: Zen's widths, which already fill the row)
+  const ZIA_WIDTH_PREF = "zia.essentials.zia-width";
 
   // The grid's own columns, worked out as the grid does (as many as fit at
   // the tiles' least width). Its computed column list also holds the extra
@@ -16,7 +18,10 @@
   }
 
   function fillEssentialRows() {
-    const on = Services.prefs.getBoolPref(FILL_ROW_PREF, false) && root.getAttribute("zen-sidebar-expanded") === "true";
+    const on =
+      Services.prefs.getBoolPref(FILL_ROW_PREF, false) &&
+      Services.prefs.getBoolPref(ZIA_WIDTH_PREF, true) &&
+      root.getAttribute("zen-sidebar-expanded") === "true";
     const wanted = new Map();
     if (on) {
       for (const grid of document.querySelectorAll(".zen-essentials-container")) {
@@ -68,7 +73,11 @@
     new MutationObserver(schedule).observe(root, { attributes: true, attributeFilter: ["zen-sidebar-expanded"] });
     window.addEventListener("ZenWorkspacesUIUpdate", schedule);
     Services.prefs.addObserver(FILL_ROW_PREF, schedule);
-    window.addEventListener("unload", () => Services.prefs.removeObserver(FILL_ROW_PREF, schedule));
+    Services.prefs.addObserver(ZIA_WIDTH_PREF, schedule);
+    window.addEventListener("unload", () => {
+      Services.prefs.removeObserver(FILL_ROW_PREF, schedule);
+      Services.prefs.removeObserver(ZIA_WIDTH_PREF, schedule);
+    });
     schedule();
   }
 

@@ -69,6 +69,12 @@
   },
   {
     "type": "checkbox",
+    "label": "Essentials are Zia's narrower tiles (off: Zen's own widths)",
+    "property": "zia.essentials.zia-width",
+    "defaultValue": true
+  },
+  {
+    "type": "checkbox",
     "label": "The last essential stretches across the rest of its row",
     "property": "zia.essentials.fill-row",
     "defaultValue": false
