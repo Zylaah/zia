@@ -4829,3 +4829,73 @@ zen-folder .tab-reset-button {
 #stop-reload-button .toolbarbutton-animatable-box {
   display: none !important;
 }
+
+/* Zen's glance buttons in Zia's look: one dark card, like the hover cards,
+   the buttons inside it the shape of Zia's close buttons, Zia's icons */
+.zen-glance-sidebar-container {
+  padding: 5px !important;
+  gap: 2px !important;
+  max-width: none !important;
+  background-color: var(--zia-tab-card-bg);
+  border-radius: var(--zia-tab-card-radius);
+  corner-shape: round;
+  box-shadow: 0 0 0 0.5px rgba(255, 255, 255, 0.12), 0 8px 24px rgba(0, 0, 0, 0.35);
+
+  :root:not([zen-right-side="true"]) & {
+    margin-inline-start: 10px;
+  }
+
+  :root[zen-right-side="true"] & {
+    margin-inline-end: 10px;
+  }
+
+  & toolbarbutton {
+    width: 32px !important;
+    height: 32px !important;
+    padding: 8px !important;
+    background: transparent !important;
+    border-radius: 9px !important;
+    corner-shape: superellipse(var(--zen-squircle-value, 1));
+    box-shadow: none !important;
+    color: rgb(255, 255, 255) !important;
+    -moz-context-properties: fill, fill-opacity;
+    fill: currentColor !important;
+    fill-opacity: 0.85;
+    transition: background-color 0.06s linear, scale 0.2s var(--zia-spring) !important;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.1) !important;
+      fill-opacity: 1;
+      scale: 1 !important;
+    }
+
+    &:hover:active {
+      scale: 0.92 !important;
+    }
+
+    & > .toolbarbutton-icon {
+      width: 16px !important;
+      height: 16px !important;
+      list-style-image: inherit !important;
+    }
+  }
+
+  & > .zen-glance-sidebar-close {
+    list-style-image: url("chrome://sine/content/zia/icons/ui/x.svg") !important;
+    width: fit-content !important;
+    min-width: 32px !important;
+
+    &[waitconfirmation] {
+      background: var(--zia-fc-red) !important;
+      fill-opacity: 1;
+    }
+  }
+
+  & > .zen-glance-sidebar-open {
+    list-style-image: url("chrome://sine/content/zia/icons/ui/arrows-diagonal.svg") !important;
+  }
+
+  & > .zen-glance-sidebar-split {
+    list-style-image: url("chrome://sine/content/zia/icons/ui/layout-columns.svg") !important;
+  }
+}
