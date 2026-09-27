@@ -21,8 +21,11 @@
   --zia-urlbar-radius: 6px;
   --zia-urlbar-open-offset: 0px;
   --zia-urlbar-open-top: 0px;
-  /* Zen's own corner radius; Zia's rounding below replaces it unless it's switched off */
-  --zia-card-radius: var(--zen-native-inner-radius, 10.5px);
+  /* Zen stores this already multiplied by --zen-squircle-value, because its
+     corners are a superellipse. Zia's corners are circular, so that stretch
+     is divided back out. With page rounding on, the card uses a fixed
+     length instead (04). */
+  --zia-card-radius: calc(var(--zen-native-inner-radius, 10.5px) / var(--zen-squircle-value, 1));
 
   --zia-shine-layers:
     linear-gradient(to right, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.2) 35%, rgba(255, 255, 255, 0.2) 65%, rgba(255, 255, 255, 0.08)),
@@ -108,6 +111,18 @@
   --zia-card-shadow: 0 0 0 0.5px rgba(0, 0, 0, 0.35), 0 1px 4px rgba(0, 0, 0, 0.3);
   --zia-hover-card-shadow: none;
   --zia-color-fade: 0.15s;
+}
+
+/* Zen paints superellipse(var(--zen-squircle-value)) onto every element
+   (1.3 on macOS, 2.3 on Windows). A Zia length drawn with that curve looks
+   squarer on Windows than the same length on macOS. Zia's corners are
+   circular. Menus, panels and dialogs keep Zen's curve, because their
+   radii are stretched for it. Close buttons set their own shape later. */
+:root,
+:root *:not(menupopup, menupopup *, panel, panel *, dialog, dialog *),
+:root *:not(menupopup, menupopup *, panel, panel *, dialog, dialog *)::before,
+:root *:not(menupopup, menupopup *, panel, panel *, dialog, dialog *)::after {
+  corner-shape: round !important;
 }
 
 /* Windows draws the sidebar over a flatter, darker backdrop than macOS's

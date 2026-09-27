@@ -177,20 +177,11 @@
 .tabbrowser-tab:not([zen-essential]) > .tab-stack > .tab-background::before,
 .tabbrowser-tab:not([zen-essential]) > .tab-stack > .tab-background::after {
   border-radius: var(--zia-tab-radius) !important;
-  corner-shape: var(--zia-tab-corner, superellipse(var(--zen-squircle-value, 1))) !important;
+  corner-shape: round !important;
 }
 
 .tabbrowser-tab:not([zen-essential]) > .tab-stack > .tab-background {
   overflow: hidden !important;
-}
-
-/* Windows: Zen squares its corners off more there than on macOS, which the
-   selected tab (always round, for its shine) didn't follow, so hovered and
-   selected tabs had different corners. Every tab is round there. */
-@media (-moz-platform: windows) {
-  :root {
-    --zia-tab-corner: round !important;
-  }
 }
 
 :root[zen-sidebar-expanded="true"] :is(zen-folder, tab-group:not([split-view-group]))[zia-bg-shift] {
@@ -328,7 +319,7 @@
 
 :is(#tabs-newtab-button, #vertical-tabs-newtab-button) {
   border-radius: var(--zia-tab-radius) !important;
-  corner-shape: var(--zia-tab-corner, superellipse(var(--zen-squircle-value, 1))) !important;
+  corner-shape: round !important;
 }
 
 :is(#tabs-newtab-button, #vertical-tabs-newtab-button):is(:active, [open]) {
@@ -487,7 +478,7 @@ zen-folder > .tab-group-label-container > .zia-folder-close {
   min-width: var(--zia-close-size);
   padding: 4px;
   border-radius: var(--zia-close-radius);
-  corner-shape: var(--zia-close-corner);
+  corner-shape: round !important;
   flex-shrink: 0;
 
   margin-inline-start: auto;
@@ -500,6 +491,13 @@ zen-folder[zia-hover-held] > .tab-group-label-container > .zia-folder-close {
 
 zen-folder > .tab-group-label-container > .zia-folder-close:hover {
   background-color: var(--zia-close-hover-bg);
+}
+
+/* A tab's own close and unload buttons use the squircle close corner.
+   Inside a folder that rule is the more specific one, so these stay
+   circular with the rest of the folder. */
+:is(zen-folder, tab-group:not([split-view-group])) .tabbrowser-tab :is(.tab-close-button, .tab-reset-button) {
+  corner-shape: round !important;
 }
 
 
