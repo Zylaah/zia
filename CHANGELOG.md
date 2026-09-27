@@ -4,6 +4,14 @@ Every release of Zia, newest first. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+
+- Picture-in-picture has rounded corners on Windows 11 too, as on macOS.
+- Picture-in-picture: on a live stream (no progress line), the sound
+  controls sit down at the bottom instead of floating above the gap.
+
 ## [2.65.0] — 2026-09-27
 
 ### Added
