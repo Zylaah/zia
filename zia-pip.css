@@ -336,8 +336,10 @@
   pointer-events: auto;
 }
 
-/* Live streams have no progress line, so sound sits down where it was */
-:root[zia-dia][zia-live] #controls .zia-pip-sound {
+/* Live streams have no progress line, so sound sits down where it was
+ * (whether Zia or Firefox itself decided it's live, which hides the line) */
+:root[zia-dia][zia-live] #controls .zia-pip-sound,
+:root[zia-dia]:has(#scrubber[hidden]) #controls .zia-pip-sound {
   bottom: 8px;
 }
 
