@@ -4,6 +4,18 @@ Every release of Zia, newest first. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## Unreleased
+
+### Added
+
+- Extensions can have icons of your own: right-click an extension's button
+  (in the toolbar or the extensions menu) and choose Change icon, then pick
+  an SVG from your computer or one of Zia's icons. SVGs take the toolbar's
+  colour like Zia's own icons, unless you tick Keep the SVG's own colours.
+  Scripts, links and anything embedded are stripped from them first.
+  Extensions that change their own icon (on or off, or per site) are noted,
+  and Zia asks before covering that up. Reset puts the original back.
+
 ## [2.65.1] — 2026-09-27
 
 ### Changed

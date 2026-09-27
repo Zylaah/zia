@@ -411,6 +411,7 @@
     safely("animateNavButtons", animateNavButtons);
     safely("springReloadHover", springReloadHover);
     safely("watchEdgeGlow", watchEdgeGlow);
+    safely("watchExtensionIcons", watchExtensionIcons);
     safely("keepSidebarUnscrolledSideways", keepSidebarUnscrolledSideways);
     safely("watchColorDrift", watchColorDrift);
     safely("watchPopUpColor", watchPopUpColor);
