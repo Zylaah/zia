@@ -5525,7 +5525,13 @@
         item.className = "toolbarbutton-1 zen-emojis-picker-svg zia-icon-item";
         item.setAttribute("tooltiptext", icon.name.replace(/-/g, " "));
         item.style.listStyleImage = `url(${url})`;
-        item.addEventListener("command", () => choose(url));
+        // Zen's picker takes every click on an icon with its class as one
+        // of its own, and would pass on a broken address (it reads an
+        // "icon" attribute these don't have) after Zia's
+        item.addEventListener("command", (event) => {
+          event.stopPropagation();
+          choose(url);
+        });
         fragment.appendChild(item);
       }
       shown = Math.min(results.length, shown + BATCH);
