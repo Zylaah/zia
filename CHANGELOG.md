@@ -16,6 +16,12 @@ Every release of Zia, newest first. The format follows
   Extensions that change their own icon (on or off, or per site) are noted,
   and Zia asks before covering that up. Reset puts the original back.
 
+### Fixed
+
+- Picture-in-picture: on live streams the sound controls now move down to
+  the bottom on sites where they stayed up, since Zia now
+  also goes by Firefox hiding the progress line.
+
 ## [2.65.1] — 2026-09-27
 
 ### Changed
