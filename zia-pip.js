@@ -42,7 +42,8 @@
     return el;
   };
 
-  // Zia's own top bar: "Back to Tab", the site, the tuck button and "Close".
+  // Zia's own top bar: "Back to Tab", the site, the tuck button, "Minimise"
+  // and "Close".
   // Firefox's corner buttons fight any restyling, so they're hidden and
   // ours press them.
   const topBar = make("div", "zia-pip-top", controls);
@@ -59,6 +60,11 @@
   }
   const end = make("div", "zia-pip-end", topBar);
   const tuckButton = make("button", "zia-pip-pill zia-pip-tuck-button control-item", end);
+  // Minimise puts picture-in-picture away and leaves the video playing in
+  // its tab: Zen's own minimize button, which closes without the pause
+  // Close does first
+  const minimiseButton = make("button", "zia-pip-pill zia-pip-minimise control-item", end);
+  minimiseButton.textContent = "Minimise";
   const closeButton = make("button", "zia-pip-pill zia-pip-close control-item", end);
   closeButton.textContent = "Close";
   // Keep our clicks away from Firefox's own click handling on #controls.
@@ -68,6 +74,17 @@
   };
   back.addEventListener("click", press("unpip"));
   closeButton.addEventListener("click", press("close"));
+  minimiseButton.addEventListener("click", (event) => {
+    event.stopPropagation();
+    const zenMinimize = document.getElementById("minimize");
+    if (zenMinimize) {
+      zenMinimize.click();
+    } else if (typeof Player !== "undefined" && typeof Player.closePipWindow === "function") {
+      Player.closePipWindow({ reason: "CloseButton" });
+    } else {
+      window.close();
+    }
+  });
 
   const sliver = make("div", "zia-pip-sliver", document.body);
 
@@ -398,7 +415,7 @@
     if (name) {
       root.style.setProperty("--zia-tuck-button-turn", `${TURN[name]}deg`);
     }
-    tuckButton.setAttribute("tooltip", "Tuck away");
+    tuckButton.setAttribute("tooltip", "Tuck away · right-click for where");
   };
   const setSpot = (name) => {
     spot = name;
@@ -469,10 +486,8 @@
   };
 
   // The picker: a small map of the screen with its eight spots, the ones
-  // facing another screen greyed out
-  const pickButton = make("button", "zia-pip-pill zia-pip-pick-button control-item", end);
-  end.insertBefore(pickButton, closeButton);
-  pickButton.setAttribute("tooltip", "Choose where");
+  // facing another screen greyed out. It opens from a right-click on the
+  // tuck button (it had a chevron of its own beside it)
   const picker = make("div", "zia-pip-picker", document.body);
   const pickerTitle = make("div", "zia-pip-picker-title", picker);
   pickerTitle.textContent = "Tuck into…";
@@ -526,7 +541,8 @@
     }
     closePicker();
   });
-  pickButton.addEventListener("click", (event) => {
+  tuckButton.addEventListener("contextmenu", (event) => {
+    event.preventDefault();
     event.stopPropagation();
     if (root.hasAttribute("zia-picking")) {
       closePicker();
@@ -535,7 +551,7 @@
     }
   });
   document.addEventListener("mousedown", (event) => {
-    if (!picker.contains(event.target) && event.target !== pickButton) {
+    if (!picker.contains(event.target) && event.target !== tuckButton) {
       closePicker();
     }
   });
