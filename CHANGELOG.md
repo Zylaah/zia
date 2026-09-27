@@ -9,7 +9,8 @@ Every release of Zia, newest first. The format follows
 ### Fixed
 
 - The sidebar icon no longer shows brighter spots where its divider meets
-  the outline (it's drawn as one line now, so nothing overlaps).
+  the outline (it's drawn as one line now, so nothing overlaps), and
+  its lines are a touch thinner, closer to Dia's.
 
 ## [2.67.2] — 2026-09-27
 
