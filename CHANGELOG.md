@@ -4,6 +4,13 @@ Every release of Zia, newest first. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Fixed
+
+- The sidebar icon no longer shows brighter spots where its divider meets
+  the outline (it's drawn as one line now, so nothing overlaps).
+
 ## [2.67.2] — 2026-09-27
 
 ### Fixed
