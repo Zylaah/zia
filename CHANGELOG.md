@@ -4,6 +4,14 @@ Every release of Zia, newest first. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.67.11] — 2026-09-27
+
+### Fixed
+
+- The icon picker's bin button puts an extension's own icon back, and
+  shows after picking one of Zia's icons too, not only Zen's (and straight
+  away for an extension that already has a custom icon).
+
 ## [2.67.10] — 2026-09-27
 
 ### Fixed
