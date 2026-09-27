@@ -4,6 +4,14 @@ Every release of Zia, newest first. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.67.7] — 2026-09-27
+
+### Fixed
+
+- Sine could say Zia was up to date while an older version was installed,
+  after several releases close together. Zia now tells Sine when each
+  release was made, so an update always brings the files that match.
+
 ## [2.67.6] — 2026-09-27
 
 ### Fixed
