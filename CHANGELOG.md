@@ -4,6 +4,15 @@ Every release of Zia, newest first. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.67.8] — 2026-09-27
+
+### Fixed
+
+- Picking an extension's icon from the icon picker: the picker really
+  stays open now as you click through icons (each is shown on the button
+  as you go and saved when the picker closes), also when the extension was
+  right-clicked in the extensions menu.
+
 ## [2.67.7] — 2026-09-27
 
 ### Fixed
