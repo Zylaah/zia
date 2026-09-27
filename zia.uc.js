@@ -11886,17 +11886,6 @@
     }
   }
 
-  function matchTabCorners() {
-    const button = document.querySelector("#vertical-tabs-newtab-button, #tabs-newtab-button");
-    if (!button) {
-      return;
-    }
-    const shape = getComputedStyle(button).getPropertyValue("corner-top-left-shape").trim();
-    if (shape) {
-      root.style.setProperty("--zia-tab-corner", shape);
-    }
-  }
-
   let zenHaptic = null;
 
   // Zen buzzes on its own drag events, which would double up with Zia's taps,
@@ -12284,7 +12273,6 @@
     window.addEventListener("resize", alignOpenedUrlbarSoon);
 
     safely("keepWholeUrlSelected", () => keepWholeUrlSelected(urlbar));
-    safely("matchTabCorners", matchTabCorners);
     safely("addCopyLinkButton", addCopyLinkButton);
     safely("addToastCloseButtons", addToastCloseButtons);
     safely("suckInEssentialGlances", suckInEssentialGlances);

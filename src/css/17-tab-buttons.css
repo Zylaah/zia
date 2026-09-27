@@ -14,6 +14,7 @@ zen-folder .tab-reset-button {
 
 zen-folder .tab-reset-button {
   fill-opacity: var(--zia-folder-mark-opacity) !important;
+  corner-shape: round !important;
 }
 
 #urlbar #identity-icon-label,
