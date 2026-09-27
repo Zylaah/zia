@@ -117,18 +117,11 @@
    (1.3 on macOS, 2.3 on Windows). A Zia length drawn with that curve looks
    squarer on Windows than the same length on macOS. Zia's corners are
    circular. Menus, panels and dialogs keep Zen's curve, because their
-   radii are stretched for it. The icon picker is Zia's own UI inside a
-   panel, so it follows Zia. Close buttons set their own shape later. */
+   radii are stretched for it. Close buttons set their own shape later. */
 :root,
 :root *:not(menupopup, menupopup *, panel, panel *, dialog, dialog *),
 :root *:not(menupopup, menupopup *, panel, panel *, dialog, dialog *)::before,
-:root *:not(menupopup, menupopup *, panel, panel *, dialog, dialog *)::after,
-:root #zia-icons-page,
-:root #zia-icons-page *,
-:root #zia-icons-page::before,
-:root #zia-icons-page *::before,
-:root #zia-icons-page::after,
-:root #zia-icons-page *::after {
+:root *:not(menupopup, menupopup *, panel, panel *, dialog, dialog *)::after {
   corner-shape: round !important;
 }
 
