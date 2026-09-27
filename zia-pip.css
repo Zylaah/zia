@@ -35,7 +35,7 @@
   display: none !important;
 }
 
-:root[zia-dia] .control-item:not(.zia-pip-tuck-button, .zia-pip-minimise)::after {
+:root[zia-dia] .control-item:not(.zia-pip-tuck-button)::after {
   display: none !important;
 }
 
@@ -149,7 +149,10 @@
     font-size: 0;
   }
 
-  #controls .zia-pip-minimise:is(:hover, :focus-visible)::after {
+  /* (Firefox's own tooltip bubble on controls is hidden for the pills, or
+     it showed as an empty black blob beside the word; only this one shows) */
+  :root[zia-dia] #controls .zia-pip-minimise:is(:hover, :focus-visible)::after {
+    display: block !important;
     content: "Minimise · keeps playing";
     position: absolute;
     top: calc(100% + 6px);
