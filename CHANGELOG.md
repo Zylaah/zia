@@ -4,6 +4,13 @@ Every release of Zia, newest first. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.67.4] — 2026-09-27
+
+### Fixed
+
+- The reload icon's line meets its arrowhead again with no gap, at rest
+  and on hover, and still without a brighter spot where they join.
+
 ## [2.67.3] — 2026-09-27
 
 ### Fixed
