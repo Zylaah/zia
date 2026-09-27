@@ -388,6 +388,12 @@
   list-style-image: url("chrome://sine/content/zia/icons/sidebar.svg") !important;
 }
 
+/* the same shade as back, forward and reload (Zen's toolbar buttons are a
+   little softer than the text, which these otherwise took) */
+:is(#zen-toggle-compact-mode, #PanelUI-menu-button, #PanelUI-menu-button[open]) .toolbarbutton-icon {
+  fill: var(--toolbarbutton-icon-fill, currentColor) !important;
+}
+
 #back-button {
   list-style-image: url("chrome://sine/content/zia/icons/back.svg") !important;
 }
