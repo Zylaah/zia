@@ -68,20 +68,7 @@
   // The custom icons as one stylesheet: each overrides the image Firefox
   // gives the button (in the toolbar and the panel, light and dark)
   function applyExtIcons() {
-    // Icons tried on in the picker, shown without changing this sheet
-    // (see pickExtIcon)
-    const rules = [`.webextension-browser-action[zia-ext-preview] {
-      --webextension-toolbar-image: var(--zia-ext-preview) !important;
-      --webextension-toolbar-image-dark: var(--zia-ext-preview) !important;
-      --webextension-menupanel-image: var(--zia-ext-preview) !important;
-      --webextension-menupanel-image-dark: var(--zia-ext-preview) !important;
-    }
-    .webextension-browser-action[zia-ext-preview],
-    .webextension-browser-action[zia-ext-preview] .toolbarbutton-icon {
-      -moz-context-properties: fill, fill-opacity, stroke, stroke-opacity !important;
-      fill: var(--toolbarbutton-icon-fill, currentColor) !important;
-      stroke: var(--toolbarbutton-icon-fill, currentColor) !important;
-    }`];
+    const rules = [];
     for (const [id, entry] of Object.entries(extIconMap())) {
       const url = extIconUrl(entry);
       if (!url) {
@@ -280,8 +267,7 @@
 
   function pickExtIcon(id, anchor) {
     const icons = window.gZenEmojiPicker;
-    const panel = document.getElementById("PanelUI-zen-emojis-picker");
-    if (!icons?.open || !panel || !okToCover(id)) {
+    if (!icons?.open || !okToCover(id)) {
       return;
     }
     // Opened from the extensions menu, the picker hangs off its toolbar
@@ -290,44 +276,15 @@
     const inMenu = anchor?.closest?.("panel, menupopup");
     const shown = anchor?.isConnected && !inMenu && anchor.getBoundingClientRect().width > 0;
     const at = shown ? anchor : document.getElementById("unified-extensions-button") || document.getElementById("nav-bar");
-    // The picker stays open and each icon clicked is tried on the button
-    // straight away. Changing the icons' stylesheet redraws the whole
-    // window, so until the picker closes the icon is shown from an
-    // attribute and a variable, and saved once at the end.
-    const selector = `.webextension-browser-action[data-extensionid="${id.replace(/["\\]/g, "\\$&")}"]`;
-    let chosen = null;
-    const showOnButtons = (url) => {
-      for (const button of document.querySelectorAll(selector)) {
-        if (url) {
-          button.style.setProperty("--zia-ext-preview", `url("${url.replace(/["\\]/g, "\\$&")}")`);
-          button.setAttribute("zia-ext-preview", "true");
-        } else {
-          button.removeAttribute("zia-ext-preview");
-          button.style.removeProperty("--zia-ext-preview");
-        }
-      }
-    };
+    // The picker stays open, and each icon clicked goes on the button
+    // straight away
     const onSelect = (url) => {
       if (typeof url === "string" && /^(chrome|resource):/.test(url)) {
-        chosen = url;
-        showOnButtons(url);
-      }
-    };
-    const finish = (event) => {
-      if (event.target !== panel) {
-        return;
-      }
-      panel.removeEventListener("popuphidden", finish);
-      if (chosen) {
-        setExtIcon(id, { url: chosen, own: false, uploaded: false }).finally(() => showOnButtons(null));
+        setExtIcon(id, { url, own: false, uploaded: false });
       }
     };
     try {
-      const pick = icons.open(at, { onlySvgIcons: true, allowNone: false, closeOnSelect: false, onSelect });
-      if (pick) {
-        panel.addEventListener("popuphidden", finish);
-        Promise.resolve(pick).catch(() => {});
-      }
+      Promise.resolve(icons.open(at, { onlySvgIcons: true, allowNone: false, closeOnSelect: false, onSelect })).catch(() => {});
     } catch (err) {
       noteError("extension icons: open the picker", err);
     }
