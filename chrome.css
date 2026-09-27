@@ -2322,8 +2322,7 @@ zen-folder > .tab-group-label-container > .zia-folder-close:hover {
   height: var(--zia-close-size) !important;
   min-width: var(--zia-close-size) !important;
   border-radius: var(--zia-close-radius) !important;
-
-  corner-shape: var(--zia-close-corner) !important;
+  corner-shape: round !important;
   margin-inline-end: 0 !important;
   padding: 4px !important;
 }
