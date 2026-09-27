@@ -277,14 +277,16 @@
     const shown = anchor?.isConnected && !inMenu && anchor.getBoundingClientRect().width > 0;
     const at = shown ? anchor : document.getElementById("unified-extensions-button") || document.getElementById("nav-bar");
     // The picker stays open, and each icon clicked goes on the button
-    // straight away
+    // straight away; the bin puts the extension's own icon back
     const onSelect = (url) => {
-      if (typeof url === "string" && /^(chrome|resource):/.test(url)) {
+      if (url === null) {
+        setExtIcon(id, null);
+      } else if (typeof url === "string" && /^(chrome|resource):/.test(url)) {
         setExtIcon(id, { url, own: false, uploaded: false });
       }
     };
     try {
-      Promise.resolve(icons.open(at, { onlySvgIcons: true, allowNone: false, closeOnSelect: false, onSelect })).catch(() => {});
+      Promise.resolve(icons.open(at, { onlySvgIcons: true, allowNone: !!extIconMap()[id], closeOnSelect: false, onSelect })).catch(() => {});
     } catch (err) {
       noteError("extension icons: open the picker", err);
     }

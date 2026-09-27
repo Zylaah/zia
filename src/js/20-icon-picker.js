@@ -417,6 +417,9 @@
 
     function choose(url) {
       picked = true;
+      // as Zen does after its own picks: with an icon chosen, the "none"
+      // (bin) button can take it off again
+      panel.removeAttribute("hide-none-option");
       options?.onSelect?.(url);
       resolvePick?.(url);
       if (options?.closeOnSelect !== false) {
