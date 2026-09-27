@@ -85,8 +85,8 @@
       if (!entry.own) {
         rules.push(`${selector}, ${selector} .toolbarbutton-icon {
           -moz-context-properties: fill, fill-opacity, stroke, stroke-opacity !important;
-          fill: currentColor !important;
-          stroke: currentColor !important;
+          fill: var(--toolbarbutton-icon-fill, currentColor) !important;
+          stroke: var(--toolbarbutton-icon-fill, currentColor) !important;
         }`);
       }
     }

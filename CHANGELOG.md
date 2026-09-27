@@ -4,6 +4,13 @@ Every release of Zia, newest first. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.67.1] — 2026-09-27
+
+### Fixed
+
+- Custom extension icons are the same colour as the back, forward and
+  reload icons, instead of a shade darker.
+
 ## [2.67.0] — 2026-09-27
 
 ### Added
