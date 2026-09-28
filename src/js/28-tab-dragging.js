@@ -278,7 +278,7 @@
           // one so tall it seemed not to go in at the folder's edge; only
           // over the folder's own end, it went in sitting over the folder's
           // name, with the room made for it empty below.)
-          cut = slotTop + drag.height * 0.42;
+          cut = slotTop + drag.height * 0.5;
         } else {
           const down = leaveDown(next);
           if (down != null) {
