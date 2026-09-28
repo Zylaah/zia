@@ -1850,8 +1850,12 @@ zen-split-fake-tab {
   margin-block: calc(var(--zia-top-row-space) - 2.5px) !important;
 }
 
+/* The same room over the bottom icons as under the essentials: Zen's own
+   gap above them (--zen-element-separation) came on top of this, leaving
+   a wider space under the tab list's edge line than over it */
 #zen-sidebar-foot-buttons {
   margin-block: var(--zia-bottom-row-space) calc(var(--zia-bottom-row-space) - 4.5px) !important;
+  padding-top: 2px !important;
 }
 
 :root[zen-sidebar-expanded="true"] zen-folder {
