@@ -10,11 +10,13 @@ Every release of Zia, newest first. The format follows
 
 - The space between the tab list and the bottom icons (or the music
   player) matches the space under the essentials.
-- Dragging a tab, folder or split into a folder (open or closed) gives a
-  haptic tap, like the other moments in a drag.
-- Opening or closing a folder, its tabs stay in place and fade in or out
-  as the folder opens over them, as in Dia, instead of sliding down from
-  under the folder's name.
+- Dragging a tab, folder or split into or out of a folder (open or
+  closed) gives a haptic tap, like the other moments in a drag.
+- Opening or closing a folder, its tabs stay in place, as in Dia, instead
+  of sliding down from under the folder's name: the folder opens over
+  them, and closing, they fade out where they are.
+- Tabs you're not on are a little dimmer (in folders and splits too),
+  going white once selected, as in Dia.
 
 ## [2.68.0] — 2026-09-28
 

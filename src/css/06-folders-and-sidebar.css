@@ -607,4 +607,8 @@ zen-folder > .tab-group-label-container > .zia-folder-close:hover {
    the folder clips them as it grows or shrinks (zia.uc.js) */
 .tab-group-container[zia-folder-holding] {
   overflow-y: clip !important;
+
+  & > :not(.zen-tab-group-start) {
+    translate: 0 var(--zia-hold-y, 0px) !important;
+  }
 }
