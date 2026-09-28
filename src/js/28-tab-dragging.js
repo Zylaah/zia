@@ -272,12 +272,13 @@
         // slot is a whole tab tall, not the sliver down to the separator
         if (!same(next) && slotTop != null) {
           // Coming up past the separator, the tab lands below the last
-          // folder first, and goes in once its middle is in the top third
-          // of the slot that opens there. (Halfway left a band of a few
-          // pixels, so it seemed to drop straight in; only over the
-          // folder's own end, it went in sitting over the folder's name,
-          // with the room made for it empty below.)
-          cut = slotTop + drag.height * 0.3;
+          // folder first, and goes in once its middle is a little way into
+          // the slot that opens there. (Halfway left a band of a few
+          // pixels, so it seemed to drop straight in; the top third left
+          // one so tall it seemed not to go in at the folder's edge; only
+          // over the folder's own end, it went in sitting over the folder's
+          // name, with the room made for it empty below.)
+          cut = slotTop + drag.height * 0.5;
         } else {
           const down = leaveDown(next);
           if (down != null) {

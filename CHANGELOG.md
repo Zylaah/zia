@@ -4,6 +4,13 @@ Every release of Zia, newest first. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.70.12] — 2026-09-28
+
+### Fixed
+
+- Dragging a tab up into the last folder above the separator, it goes in
+  sooner, rather than sitting below the folder for a stretch first.
+
 ## [2.70.11] — 2026-09-28
 
 ### Fixed
