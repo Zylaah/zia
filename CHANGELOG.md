@@ -10,6 +10,9 @@ Every release of Zia, newest first. The format follows
 
 - The space between the tab list and the bottom icons (or the music
   player) matches the space under the essentials.
+- Opening or closing a folder, its tabs stay in place and fade in or out
+  as the folder opens over them, as in Dia, instead of sliding down from
+  under the folder's name.
 
 ## [2.68.0] — 2026-09-28
 

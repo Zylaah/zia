@@ -151,6 +151,40 @@
     );
   }
 
+  // Zen opens a folder by sliding everything in it down from under its
+  // name (a margin on its start, clipped by the folder). As in Dia, the
+  // tabs stay where they'll sit instead, fading in as the folder opens
+  // over them and the rows below move down (and fading out in place as it
+  // closes): each is moved back by exactly the margin, frame for frame,
+  // with the folder clipping them meanwhile.
+  function holdFolderContents(container, marginFrames, closing, animate) {
+    if (!container?.classList?.contains("tab-group-container")) {
+      return null;
+    }
+    const items = [...container.children].filter((child) => !child.classList.contains("zen-tab-group-start"));
+    if (!items.length) {
+      return null;
+    }
+    const counter = marginFrames.map((frame) => {
+      const step = { offset: frame.offset, translate: `0 ${-parseFloat(frame.marginTop) || 0}px` };
+      if (frame.easing) {
+        step.easing = frame.easing;
+      }
+      return step;
+    });
+    // Closing, they're gone a little before the folder is, and stay gone
+    // until Zen hides it
+    const fade = closing
+      ? [{ opacity: 1, easing: "ease-in" }, { opacity: 0, offset: 0.7 }, { opacity: 0 }]
+      : [{ opacity: 0, easing: "ease-out" }, { opacity: 1, offset: 0.75 }, { opacity: 1 }];
+    container.setAttribute("zia-folder-holding", "true");
+    for (const item of items) {
+      animate.call(item, counter, { duration: FOLDER_SPRING_MS });
+      animate.call(item, fade, { duration: FOLDER_SPRING_MS + (closing ? 120 : 0) });
+    }
+    return () => container.removeAttribute("zia-folder-holding");
+  }
+
   // With a tab selected inside it, Zen leaves the folder's start where it
   // is and shrinks the other tabs away instead (or grows them back), so the
   // spring above never ran. Those tabs' own animations get the spring's
@@ -304,7 +338,17 @@
       if (spring.closing) {
         bounceUpAfterClosing(this.parentElement, animate);
       }
-      return animate.call(this, spring.keyframes, spring.options);
+      let release = null;
+      try {
+        release = holdFolderContents(this.parentElement, spring.keyframes, spring.closing, animate);
+      } catch (err) {
+        noteError("folder bounce: hold contents", err);
+      }
+      const running = animate.call(this, spring.keyframes, spring.options);
+      if (release) {
+        running.finished.then(release, release);
+      }
+      return running;
     };
     patched.__zia = true;
     Element.prototype.animate = patched;
