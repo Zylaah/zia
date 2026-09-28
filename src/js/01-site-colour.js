@@ -53,13 +53,21 @@
   function updateDarkSiteInk(rgb, brightness, inkOnly = false) {
     if (!rgb || brightness >= INK_MAX) {
       root.style.removeProperty("--zia-dark-ink");
+      root.style.removeProperty("--zia-dark-icon");
       root.style.removeProperty("--zia-urlbar-hover-bg");
       return;
     }
     const base = rgb.slice(0, 3);
     const t = brightness <= 1 ? 0 : Math.min(1, (brightness - 1) / 46);
     const level = brightness <= 1 ? 251 : Math.round(150 + t * 26);
-    root.style.setProperty("--zia-dark-ink", `rgb(${level}, ${level}, ${level})`);
+    // As in Dia, the text and buttons lean towards the site's own hue (a
+    // navy site gets a blue-grey address, not a plain grey one): the
+    // colour's lean away from grey, stretched and laid over the ink.
+    const mean = (base[0] + base[1] + base[2]) / 3;
+    const lean = base.map((c) => Math.max(-45, Math.min(45, (c - mean) * 2.5)));
+    const tinted = (level, share) => lean.map((d) => Math.round(Math.max(0, Math.min(255, level + d * share)))).join(", ");
+    root.style.setProperty("--zia-dark-ink", `rgb(${tinted(level, 1)})`);
+    root.style.setProperty("--zia-dark-icon", `rgb(${tinted(Math.max(level, 236), 0.5)})`);
     if (inkOnly) {
       root.style.removeProperty("--zia-urlbar-hover-bg");
       return;

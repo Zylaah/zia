@@ -4,6 +4,29 @@ Every release of Zia, newest first. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- Open tabs are marked in the address bar's suggestions: a small "Switch to
+  tab" tag at the end of the row.
+
+### Changed
+
+- On dark sites the toolbar's text and buttons lean a little towards the
+  site's own colour, as in Dia (a navy site gets a blue-grey address rather
+  than a plain grey one).
+- The page's outline against the sidebar is lighter.
+- Corners are round throughout (except Zen's menus and panels), which
+  fixes squarer corners on Windows (thanks Zylaah).
+
+### Fixed
+
+- Picture-in-picture: pulling a tucked window out keeps going once it's
+  fully on the screen, instead of stopping at the edge until you let go.
+- The address bar let you type "twitch.tv" but not the "/" after it (the
+  autofilled slash that Zia hides took the typed one with it).
+
 ## [2.67.11] — 2026-09-27
 
 ### Fixed

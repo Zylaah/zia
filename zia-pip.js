@@ -692,8 +692,10 @@
     lastX = x;
     lastY = y;
   };
-  // Pulling out follows the pointer, but never back past the tucked position
-  // or further than fully on the screen
+  // Pulling out follows the pointer, never back past the tucked position.
+  // Once it's fully on the screen and the pointer keeps going, it's out:
+  // the same drag carries on moving it freely, with no letting go first.
+  const FREE_AFTER = 12;
   const moveOut = (event) => {
     const b = screenBox();
     const dx = event.screenX - dragFrom.x;
@@ -702,6 +704,16 @@
     const [ox, oy] = outPos();
     const acrossX = spot.endsWith("left") || spot.endsWith("right");
     const acrossY = spot.startsWith("top") || spot.startsWith("bottom");
+    const past = (raw, tucked, out) => (out - tucked) * (raw - out) > 0 && Math.abs(raw - out) > FREE_AFTER;
+    if ((acrossX && past(dragFrom.windowX + dx, tx, ox)) || (acrossY && past(dragFrom.windowY + dy, ty, oy))) {
+      veil(0);
+      release();
+      dragMode = "free";
+      root.setAttribute("zia-dragging", "free");
+      dragFrom = { x: event.screenX, y: event.screenY, windowX: window.screenX, windowY: window.screenY };
+      moveFree(event);
+      return;
+    }
     const x = acrossX ? clamp(dragFrom.windowX + dx, Math.min(tx, ox), Math.max(tx, ox)) : clamp(dragFrom.windowX + dx, b.left, b.right - W());
     const y = acrossY ? clamp(dragFrom.windowY + dy, Math.min(ty, oy), Math.max(ty, oy)) : clamp(dragFrom.windowY + dy, b.top, b.bottom - H());
     const parts = [];
@@ -715,6 +727,15 @@
     window.moveTo(Math.round(x), Math.round(y));
     lastX = Math.round(x);
     lastY = Math.round(y);
+  };
+
+  // Out and still held: the window follows the pointer anywhere
+  const moveFree = (event) => {
+    const x = Math.round(dragFrom.windowX + event.screenX - dragFrom.x);
+    const y = Math.round(dragFrom.windowY + event.screenY - dragFrom.y);
+    window.moveTo(x, y);
+    lastX = x;
+    lastY = y;
   };
 
   sliver.addEventListener("mouseenter", () => nudge(true));
@@ -757,7 +778,9 @@
       restartDrag(event);
       return;
     }
-    if (dragMode === "out") {
+    if (dragMode === "free") {
+      moveFree(event);
+    } else if (dragMode === "out") {
       moveOut(event);
     } else {
       moveAlong(event);
@@ -776,7 +799,9 @@
     if (sliver.hasPointerCapture?.(event.pointerId)) {
       sliver.releasePointerCapture(event.pointerId);
     }
-    if (mode === "out") {
+    if (mode === "free") {
+      // Already out, and stays where it was dropped
+    } else if (mode === "out") {
       // Pulled out: it stays out, sliding the rest of the way onto the screen
       slideOut(200);
     } else if (mode === "along") {
