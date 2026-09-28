@@ -193,34 +193,44 @@
     if (!container?.classList?.contains("tab-group-container")) {
       return null;
     }
-    const { from, to, closing } = spring;
+    const { to, closing } = spring;
     // It goes from the height it's at (turned round part way, clicked
     // again before it finished, measured before the last one's stopped)
     const fromHeight = container.getBoundingClientRect().height;
     container.ziaHold?.();
-    // to the folder's height open or shut
+    // to the folder's height open or shut, measured, not taken from the
+    // margin: Zen's ends go stale mid-way, and an empty folder's margin
+    // moves just a few pixels, which made the height move in steps
     const saved = start.style.marginTop;
     start.style.marginTop = "0px";
-    let toHeight = container.getBoundingClientRect().height;
+    const openHeight = container.getBoundingClientRect().height;
+    let toHeight = openHeight;
     if (closing) {
-      start.style.marginTop = `${-2 * toHeight - 1}px`;
+      start.style.marginTop = `${-2 * openHeight - 1}px`;
       toHeight = container.getBoundingClientRect().height;
     }
     start.style.marginTop = saved;
     if (!(Math.abs(toHeight - fromHeight) > 0.5)) {
       return null;
     }
-    const heights = spring.keyframes.map((frame) => {
-      const k = ((parseFloat(frame.marginTop) || 0) - from) / (to - from);
-      const step = { offset: frame.offset, height: `${Math.max(0, fromHeight + k * (toHeight - fromHeight))}px` };
-      if (frame.easing) {
-        step.easing = frame.easing;
-      }
-      return step;
-    });
+    const heights = spring.plain
+      ? [{ height: `${fromHeight}px` }, { height: `${toHeight}px` }]
+      : pixelSteps(
+          "height",
+          [
+            [0, fromHeight, EASE_OUT],
+            [0.62, Math.max(0, toHeight + Math.sign(toHeight - fromHeight) * Math.min(FOLDER_OVERSHOOT_PX, Math.abs(toHeight - fromHeight) / 4)), EASE_IN_OUT],
+            [1, toHeight],
+          ],
+          spring.options.duration,
+          toHeight
+        );
+    // Shut, the margin takes everything in the folder out of sight (Zen's
+    // own end can fall short when it's turned round part way)
+    const shut = Math.min(to, -openHeight);
     const margin = closing
-      ? [{ marginTop: `${from}px` }, { marginTop: `${from}px`, offset: 0.999 }, { marginTop: `${to}px` }]
-      : [{ marginTop: `${to}px` }, { marginTop: `${to}px` }];
+      ? [{ marginTop: "0px" }, { marginTop: "0px", offset: 0.999 }, { marginTop: `${shut}px` }]
+      : [{ marginTop: "0px" }, { marginTop: "0px" }];
 
     const items = [...container.children].filter((child) => child !== start);
     const fades = closing
@@ -310,6 +320,10 @@
       // or when one of them is selected.
       container.removeAttribute("zia-folder-holding");
       growing.cancel();
+      // (and shut all the way, whatever end Zen kept)
+      if (parseFloat(getComputedStyle(start).marginTop) > shut + 0.5) {
+        start.style.marginTop = `${shut}px`;
+      }
       gBrowser.tabContainer.addEventListener("TabSelect", onSelect);
     }, () => {});
     return margin;

@@ -4,6 +4,15 @@ Every release of Zia, newest first. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Fixed
+
+- Clicking an empty folder open and shut quickly, it springs smoothly
+  every time, instead of moving in jumps or sometimes not bouncing.
+- Clicking a folder open and shut quickly no longer sometimes leaves it
+  shut with an empty gap under its name.
+
 ## [2.70.7] — 2026-09-28
 
 ### Fixed
