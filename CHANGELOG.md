@@ -4,6 +4,14 @@ Every release of Zia, newest first. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Fixed
+
+- With the folder spring turned off, an empty folder's "Drag tabs here"
+  slot (as on a Live Folder with nothing in it) no longer springs open and
+  shut (thanks Bxthesda).
+
 ## [2.69.2] — 2026-09-28
 
 ### Fixed
