@@ -3239,7 +3239,7 @@ zen-workspace arrowscrollbox::part(scrollbox) {
 
     .zen-media-current-time,
     .zen-media-duration {
-      max-width: 40px;
+      max-width: 64px;
       opacity: 1;
     }
 
