@@ -2017,12 +2017,39 @@
     picker.open = patched;
   }
 
+  // Opening a folder that showed just its open tab, Zen brings its other
+  // tabs back to "their own" opacity, which can't be animated to: they
+  // stayed invisible as the folder opened, then all showed at once. They
+  // fade back in instead.
+  function fadeBackIn(element, keyframes) {
+    if (element.localName !== "tab" || !element.closest?.(FOLDER_SELECTOR)) {
+      return keyframes;
+    }
+    if (Array.isArray(keyframes)) {
+      const last = keyframes.at(-1);
+      if (keyframes.length >= 2 && last && "opacity" in last && (last.opacity === "" || last.opacity == null)) {
+        return [...keyframes.slice(0, -1), { ...last, opacity: 1 }];
+      }
+      return keyframes;
+    }
+    const opacity = keyframes?.opacity;
+    if (Array.isArray(opacity) && opacity.length >= 2 && (opacity.at(-1) === "" || opacity.at(-1) == null)) {
+      return { ...keyframes, opacity: [...opacity.slice(0, -1), 1] };
+    }
+    return keyframes;
+  }
+
   function addFolderBounce() {
     const animate = Element.prototype.animate;
     if (animate.__zia) {
       return;
     }
     const patched = function (keyframes, options) {
+      try {
+        keyframes = fadeBackIn(this, keyframes);
+      } catch (err) {
+        noteError("folder bounce: fade back in", err);
+      }
       const spring = springFolderAnimation(this, keyframes, options);
       if (!spring) {
         const item = springFolderItem(this, keyframes, options);
@@ -2173,9 +2200,8 @@
         if (folder?.hasAttribute?.("zia-was-active")) {
           clear(folder);
         }
-        // Opening a folder that showed just its open tab, its other tabs
-        // fade in as Zen grows them back (at once, a strip of each showed
-        // as they grew)
+        // Opening a folder that showed just its open tab, it's marked for a
+        // moment, so the inner folder names it kept stay while it opens
         if (isFolder(folder) && folder.hasAttribute("has-active")) {
           folder.setAttribute("zia-revealing", "true");
           clearTimeout(folder.ziaRevealTimer);
