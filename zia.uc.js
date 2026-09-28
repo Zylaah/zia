@@ -6616,6 +6616,11 @@
     if (!isFolder(folder) || folderIconURL(folder)) {
       return;
     }
+    // A folder made empty (New Folder) has nothing to go by but its own
+    // default name, which only ever suggested a plain folder icon
+    if (!(folder.tabs || []).length) {
+      return;
+    }
 
     folder.setAttribute("zia-suggesting", "true");
     showFolderSkeleton(folder);

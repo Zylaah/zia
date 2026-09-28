@@ -153,3 +153,9 @@ zen-workspace arrowscrollbox::part(scrollbox) {
   color: rgb(255, 255, 255) !important;
 }
 
+
+/* Renaming a tab or folder: the name in the box stays the size it is in the
+   list */
+#tab-label-input {
+  font-size: var(--zia-text-size) !important;
+}
