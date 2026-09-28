@@ -2658,7 +2658,7 @@ zen-workspace arrowscrollbox::part(scrollbox) {
 /* As in Dia, a tab that isn't the one you're on is a little dimmer, hovered
    or not, and goes white once selected */
 .tabbrowser-tab:not([zen-essential]) .tab-label-container {
-  color: rgba(255, 255, 255, 0.76) !important;
+  color: rgba(255, 255, 255, 0.8) !important;
   opacity: 1 !important;
 }
 
