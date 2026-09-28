@@ -14,6 +14,8 @@ Every release of Zia, newest first. The format follows
 - Opening or closing a folder, its tabs stay in place, as in Dia, instead
   of sliding down from under the folder's name: the folder opens over
   them, and closing, they fade out where they are.
+- Dragging a tab up past the separator opens a space below the last
+  folder, instead of dropping it straight into that folder.
 - Tabs you're not on are a little dimmer (in folders and splits too),
   going white once selected, as in Dia.
 

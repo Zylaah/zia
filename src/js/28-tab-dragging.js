@@ -270,9 +270,17 @@
       if (prev && same(prev)) {
         // the last folder before the separator has no row after it: its
         // slot is a whole tab tall, not the sliver down to the separator
-        const down = !same(next) && slotTop != null ? slotTop + drag.height + 10 : leaveDown(next);
-        if (down != null) {
-          cut = (leaveUp(prev) + down) / 2;
+        if (!same(next) && slotTop != null) {
+          // Coming up past the separator, the tab lands below the last
+          // folder first; it goes in only once its middle is over the
+          // folder's own end. (Halfway through the slot, as below, left
+          // a band of a few pixels, so it seemed to drop straight in.)
+          cut = slotTop + 2;
+        } else {
+          const down = leaveDown(next);
+          if (down != null) {
+            cut = (leaveUp(prev) + down) / 2;
+          }
         }
       }
       let folder = null;
