@@ -15,6 +15,9 @@ Every release of Zia, newest first. The format follows
 - A closed folder showing its selected tab no longer leaves a gap under
   it when a folder inside it is open (the fix in 2.70.9 lost out to
   another rule).
+- Selecting a tab elsewhere while a closed folder shows a tab from a
+  folder inside it, that tab and the inner folder's name fade and the
+  folder shrinks shut, instead of vanishing at once.
 
 ## [2.70.9] — 2026-09-28
 

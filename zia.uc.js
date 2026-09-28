@@ -2084,27 +2084,82 @@
   const SPACE_OPEN_MS = 700;
 
   // A closed folder showing its selected tab keeps its other tabs see-
-  // through (chrome.css). Unloading the folder moves the selection out, and
-  // the moment it did, all its tabs showed piled on one row while Zen shut
-  // it. They stay see-through (the one that was showing fades) until Zen
-  // has, or the folder opens.
+  // through (chrome.css). Unloading the folder, or selecting a tab
+  // elsewhere, Zen stops showing the tab: all its tabs showed piled on one
+  // row while Zen shut it, or (with the tab in a folder inside) the tab and
+  // that folder's name went at once. The folder keeps its layout a moment
+  // while they fade (chrome.css), then shrinks shut.
   function keepTabsHiddenAfterActiveLeaves() {
     const tabs = gBrowser.tabContainer;
     if (!tabs) {
       return;
     }
+    // (which tab it shows, and which folders in it keep their names: Zen
+    // may clear its own marks for them as it lets go)
+    const unmark = (folder) => {
+      for (const el of folder.querySelectorAll("[zia-kept-tab], [zia-keeps-name]")) {
+        el.removeAttribute("zia-kept-tab");
+        el.removeAttribute("zia-keeps-name");
+      }
+    };
+    const mark = (folder) => {
+      unmark(folder);
+      for (const tab of folder.querySelectorAll('.tabbrowser-tab:is([selected], [folder-active="true"])')) {
+        tab.setAttribute("zia-kept-tab", "true");
+        for (let el = tab.parentElement?.closest(FOLDER_SELECTOR); el && el !== folder; el = el.parentElement?.closest(FOLDER_SELECTOR)) {
+          el.setAttribute("zia-keeps-name", "true");
+        }
+      }
+    };
     const clear = (folder) => {
       clearTimeout(folder.ziaWasActiveTimer);
       folder.removeAttribute("zia-was-active");
+      unmark(folder);
+    };
+    // Faded out, the folder lets go of them: Zen had already pulled them
+    // out of sight, all at once, and the folder's box shrinks to match
+    const settle = (folder) => {
+      const container = folder.groupContainer;
+      const before = container?.getBoundingClientRect().height ?? 0;
+      clear(folder);
+      if (!container || container.ziaHold || !folder.hasAttribute("collapsed")) {
+        return;
+      }
+      const after = container.getBoundingClientRect().height;
+      if (before - after < 0.5) {
+        return;
+      }
+      container.setAttribute("zia-folder-holding", "true");
+      const shrink = container.animate([{ height: `${before}px` }, { height: `${after}px` }], {
+        duration: 220,
+        easing: "cubic-bezier(0.42, 0, 0.58, 1)",
+      });
+      const done = () => {
+        if (!container.ziaHold) {
+          container.removeAttribute("zia-folder-holding");
+        }
+      };
+      shrink.finished.then(done, done);
     };
     new MutationObserver((records) => {
       for (const { target, oldValue } of records) {
-        if (!isFolder(target) || oldValue === null || target.hasAttribute("has-active") || !target.hasAttribute("collapsed")) {
+        if (!isFolder(target)) {
+          continue;
+        }
+        if (target.hasAttribute("has-active")) {
+          if (target.hasAttribute("collapsed")) {
+            clear(target);
+            mark(target);
+          }
+          continue;
+        }
+        if (oldValue === null || !target.hasAttribute("collapsed")) {
+          unmark(target);
           continue;
         }
         target.setAttribute("zia-was-active", "true");
         clearTimeout(target.ziaWasActiveTimer);
-        target.ziaWasActiveTimer = setTimeout(() => clear(target), 700);
+        target.ziaWasActiveTimer = setTimeout(() => settle(target), 170);
       }
     }).observe(tabs, { subtree: true, attributes: true, attributeFilter: ["has-active"], attributeOldValue: true });
     window.addEventListener(
