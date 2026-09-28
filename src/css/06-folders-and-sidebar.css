@@ -312,6 +312,13 @@
   opacity: 0.6 !important;
 }
 
+/* "New Tab" is the size and weight of the tabs' names (it kept Zen's own,
+   a little bigger) */
+:is(#tabs-newtab-button, #vertical-tabs-newtab-button) > .toolbarbutton-text {
+  font-size: var(--zia-text-size) !important;
+  font-weight: var(--zia-tab-weight) !important;
+}
+
 :is(#tabs-newtab-button, #vertical-tabs-newtab-button):hover {
   background: var(--zia-tab-hover-bg) !important;
   background-color: var(--zia-tab-hover-bg) !important;
