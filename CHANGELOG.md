@@ -4,6 +4,17 @@ Every release of Zia, newest first. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.69.4] — 2026-09-28
+
+### Fixed
+
+- With the folder spring off, an empty folder opens in one smooth motion:
+  its "Drag tabs here" slot now keeps Zen's own timing, where it paused for
+  a moment part way (thanks Bxthesda).
+- With the folder spring off, folders still open over their tabs and fade
+  them out in place as in Dia (the setting only turns off the bounce);
+  they had gone back to Zen's slide.
+
 ## [2.69.3] — 2026-09-28
 
 ### Fixed
