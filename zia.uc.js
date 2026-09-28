@@ -1858,12 +1858,19 @@
       // folder, and shown again there they flashed over the rows above.
       // They come back as it opens again (stop, from its next animation)
       // or when one of them is selected.
-      container.removeAttribute("zia-folder-holding");
-      growing.cancel();
-      // (and shut all the way, whatever end Zen kept)
-      if (parseFloat(getComputedStyle(start).marginTop) > shut + 0.5) {
-        start.style.marginTop = `${shut}px`;
-      }
+      // It's shut all the way, whatever end Zen keeps: Zen writes its own
+      // end (short, turned round part way) just after, so this comes the
+      // frame after, before anything's drawn.
+      requestAnimationFrame(() => {
+        if (done || !container.parentElement?.hasAttribute("collapsed")) {
+          return;
+        }
+        if (parseFloat(getComputedStyle(start).marginTop) > shut + 0.5) {
+          start.style.marginTop = `${shut}px`;
+        }
+        container.removeAttribute("zia-folder-holding");
+        growing.cancel();
+      });
       gBrowser.tabContainer.addEventListener("TabSelect", onSelect);
     }, () => {});
     return margin;
