@@ -4,6 +4,22 @@ Every release of Zia, newest first. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.70.9] — 2026-09-28
+
+### Fixed
+
+- A closed folder showing its selected tab no longer leaves a gap under
+  the tab when a folder inside it is open: the inner folder's other tabs
+  and room shrink away with the rest.
+- Clicking the name of a folder kept inside a closed folder opens both,
+  instead of seeming to do nothing, and the tabs the closed folder hides
+  fade as they go rather than leaving an empty gap for a moment.
+- Selecting a tab elsewhere, a closed folder still showing its last tab
+  keeps the inner folder's name above it.
+- Opening or shutting a folder holding the open tab no longer cuts off
+  that tab's glow for a moment, and its other tabs no longer show piled up
+  as they grow back.
+
 ## [2.70.8] — 2026-09-28
 
 ### Fixed
