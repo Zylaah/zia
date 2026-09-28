@@ -4,6 +4,14 @@ Every release of Zia, newest first. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.69.1] — 2026-09-28
+
+### Changed
+
+- Collapsing a space (clicking its name) with a tab open inside a folder
+  keeps that folder's name showing above the tab, instead of leaving the
+  tab on its own (thanks Bxthesda).
+
 ## [2.69.0] — 2026-09-28
 
 ### Changed

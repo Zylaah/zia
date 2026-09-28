@@ -445,3 +445,40 @@
     }
   }
 
+
+  // A collapsed space keeps the names of the folders its open tab is in
+  // (06-folders-and-sidebar.css), marked from when it collapses until it
+  // has finished opening again.
+  const SPACE_OPEN_MS = 700;
+
+  function keepFolderNamesInCollapsedSpaces() {
+    const timers = new WeakMap();
+    const update = (space) => {
+      clearTimeout(timers.get(space));
+      if (space.hasAttribute("collapsedpinnedtabs")) {
+        space.setAttribute("zia-keep-folder-names", "true");
+        return;
+      }
+      if (space.hasAttribute("zia-keep-folder-names")) {
+        timers.set(space, setTimeout(() => {
+          if (!space.hasAttribute("collapsedpinnedtabs")) {
+            space.removeAttribute("zia-keep-folder-names");
+          }
+        }, SPACE_OPEN_MS));
+      }
+    };
+    new MutationObserver((records) => {
+      for (const record of records) {
+        if (record.target.localName === "zen-workspace") {
+          update(record.target);
+        }
+      }
+    }).observe(document.documentElement, {
+      subtree: true,
+      attributes: true,
+      attributeFilter: ["collapsedpinnedtabs"],
+    });
+    for (const space of document.querySelectorAll("zen-workspace[collapsedpinnedtabs]")) {
+      update(space);
+    }
+  }
