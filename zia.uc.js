@@ -1733,6 +1733,26 @@
     container.setAttribute("zia-folder-holding", "true");
     const growing = animate.call(container, heights, { duration: FOLDER_SPRING_MS });
     let done = false;
+    const unfade = () => {
+      for (const fade of fades) {
+        fade.cancel();
+      }
+      gBrowser.tabContainer.removeEventListener("TabSelect", onSelect);
+      window.removeEventListener("TabGroupExpand", onOpen, true);
+    };
+    // (however it's opened: not every opening comes through here)
+    const onOpen = (event) => {
+      if (event.target === container.parentElement) {
+        stop();
+      }
+    };
+    // A tab selected inside the closed folder is shown by Zen: it can't
+    // stay faded out
+    const onSelect = () => {
+      if (container.contains(gBrowser.selectedTab)) {
+        unfade();
+      }
+    };
     const stop = () => {
       if (done) {
         return;
@@ -1740,29 +1760,25 @@
       done = true;
       if (container.ziaHold === stop) {
         container.ziaHold = null;
-        container.removeAttribute("zia-folder-holding");
       }
+      container.removeAttribute("zia-folder-holding");
       growing.cancel();
-      for (const fade of fades) {
-        fade.cancel();
-      }
+      unfade();
     };
     container.ziaHold = stop;
     growing.finished.then(() => {
-      // closing, the faded tabs stay as they are until the folder hides them
       if (!closing) {
         stop();
         return;
       }
-      const began = performance.now();
-      const wait = () => {
-        if (container.hidden || performance.now() - began > 400) {
-          stop();
-        } else {
-          requestAnimationFrame(wait);
-        }
-      };
-      wait();
+      // Closed, the tabs stay faded out: Zen leaves them just above the
+      // folder, and shown again there they flashed over the rows above.
+      // They come back as it opens again (stop, from its next animation)
+      // or when one of them is selected.
+      container.removeAttribute("zia-folder-holding");
+      growing.cancel();
+      gBrowser.tabContainer.addEventListener("TabSelect", onSelect);
+      window.addEventListener("TabGroupExpand", onOpen, true);
     }, () => {});
     return margin;
   }
