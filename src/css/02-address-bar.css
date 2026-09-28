@@ -553,7 +553,7 @@
 
 /* "Switch to tab:" (and the like) in the address itself, the address's own
    size rather than Zen's 14px */
-#urlbar-label-box,
-#urlbar-label-box > * {
-  font-size: inherit !important;
+#urlbar[breakout-extend]:not([zia-classic]) :is(#urlbar-label-box, #urlbar-label-box > *) {
+  font-size: var(--zia-text-size) !important;
+  font-weight: var(--zia-tab-weight) !important;
 }
