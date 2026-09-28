@@ -578,6 +578,44 @@
     );
   }
 
+  // A closed folder showing its selected tab keeps the name of a closed
+  // folder inside it holding that tab (chrome.css). Clicked, it opened, but
+  // everything round it stayed hidden, so nothing showed: the folders it's
+  // in open too.
+  function openKeptFolderNames() {
+    window.addEventListener(
+      "click",
+      (event) => {
+        if (event.button !== 0) {
+          return;
+        }
+        const label = event.target?.closest?.(".tab-group-label-container");
+        const folder = label?.parentElement;
+        if (!isFolder(folder) || !folder.hasAttribute("collapsed") || !folder.querySelector('.tabbrowser-tab:is([selected], [folder-active="true"])')) {
+          return;
+        }
+        if (event.target.closest(".tab-group-label-container toolbarbutton, .tab-close-button, .tab-reset-button, [anonid], button")) {
+          return;
+        }
+        const outer = [];
+        for (let el = folder.parentElement?.closest(FOLDER_SELECTOR); el; el = el.parentElement?.closest(FOLDER_SELECTOR)) {
+          if (el.hasAttribute("collapsed")) {
+            outer.unshift(el);
+          }
+        }
+        if (!outer.length) {
+          return;
+        }
+        event.stopPropagation();
+        event.preventDefault();
+        for (const el of [...outer, folder]) {
+          el.collapsed = false;
+        }
+      },
+      true
+    );
+  }
+
   function keepFolderNamesInCollapsedSpaces() {
     const timers = new WeakMap();
     const update = (space) => {

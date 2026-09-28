@@ -58,6 +58,9 @@ zen-folder[collapsed][has-active] > .tab-group-container {
 
 zen-folder[collapsed][has-active] .tabbrowser-tab:not([selected], [visuallyselected], [folder-active="true"], [atg-folder-active], tab-group[split-view-group] > .tabbrowser-tab) {
   opacity: 0 !important;
+  /* (fading as Zen shrinks them, rather than gone at once, which showed as
+     an empty gap closing up) */
+  transition: opacity 0.18s ease-in-out;
 }
 
 /* Unloaded (the selection moves out), its tabs stay see-through while Zen
