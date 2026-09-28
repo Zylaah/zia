@@ -1651,12 +1651,16 @@
     if (!Number.isFinite(from) || !Number.isFinite(to) || from === to) {
       return null;
     }
+    let bounce = true;
     try {
-      if (!Services.prefs.getBoolPref("zia.folders.bounce", true)) {
-        return null;
-      }
+      bounce = Services.prefs.getBoolPref("zia.folders.bounce", true);
     } catch (err) {
-      return null;
+      bounce = false;
+    }
+    // Spring off: Zen's own timing, but still the folder opening over its
+    // tabs (holdFolderContents); the setting is for the bounce only
+    if (!bounce) {
+      return { from, to, closing: to < from, plain: true, keyframes, options };
     }
     // Opening, the margin rises to 0 and goes a little past; closing, it
     // falls and goes a little further, so the rows below rise past their
@@ -1735,7 +1739,7 @@
         )
       : [];
     container.setAttribute("zia-folder-holding", "true");
-    const growing = animate.call(container, heights, { duration: FOLDER_SPRING_MS });
+    const growing = animate.call(container, heights, { duration: spring.options.duration, easing: spring.options.easing || "linear" });
     let done = false;
     const unfade = () => {
       for (const fade of fades) {
@@ -1937,7 +1941,7 @@
         }
         return animate.call(this, item.keyframes, item.options);
       }
-      if (spring.closing) {
+      if (spring.closing && !spring.plain) {
         bounceUpAfterClosing(this.parentElement, animate);
       }
       let margin = null;
