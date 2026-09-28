@@ -4,6 +4,13 @@ Every release of Zia, newest first. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Fixed
+
+- The music player's time no longer cuts off for something an hour or
+  longer (-1:54:45 lost its last digit).
+
 ## [2.71.1] — 2026-09-28
 
 ### Changed
