@@ -82,6 +82,7 @@ The page and toolbar share one rounded card, and the toolbar takes the colour of
 - The colour follows the page as you scroll. Text and buttons stay readable: dark on light sites, white on dark ones, and full white with nothing faint on strong colours like a bright red.
 - Colours are remembered per site, so pages open already in their colour. Every few seconds Zia checks again, so a header that recolours itself after loading, or a first reading that was off, is corrected.
 - While a page loads, a glow runs along the address bar. The address reads as `domain / title`; hover it for the full URL.
+- Right-click an extension's button and choose **Change icon** to give it an SVG of your own or one of Zia's icons, tinted to match the toolbar (or kept in its own colours). Zia warns you if the extension changes its own icon, since a custom one hides that.
 - Back and forward squeeze on hover and slide away when clicked as a fresh arrow slides in. Hover reload and its arrowhead draws back round the circle; a load spins it into a stop cross that turns back into the arrow when the page is done. With nowhere to go, back and forward fade to dim rather than snapping.
 
 </details>
@@ -98,6 +99,8 @@ Short rows, one size of text, and none of Firefox's chips, row menus or extra en
 - What you type lines up exactly with the results underneath.
 - It can take the toolbar's colour as it opens, so it reads as the same bar growing.
 - As you type an address, the site's own icon replaces the magnifying glass.
+- Suggestions for tabs you already have open are marked **Switch to tab**.
+- Optionally, the bar shows just the page's title, in the site's colour, until you click it.
 - A paperclip beside site settings copies the page's link and pops into a tick.
 - The whole bar can move to the **bottom**, under the page, opening upwards, in a single page or a split.
 
@@ -120,7 +123,9 @@ Essentials sit as tiles, four to a row (six when the sidebar is wide). A space's
 - The dragged tab follows the pointer while the rows it passes slide aside; a folder opens up by a row to make room.
 - Over the essentials a tab turns into the tile it's about to become; drag an essential back off and it's a tab again.
 - Hovering a tab shows a card with its title, address and a few actions (pin as an essential, split, copy the link). Hovering a collapsed folder lists what's inside.
-- A collapsed folder with an open tab shows just that tab, glow and all.
+- A collapsed folder with an open tab shows just that tab, glow and all. Collapse a whole space by clicking its name and a folder holding the open tab keeps its name above it.
+- Tabs you're not on are a little dimmer, as in Dia, and go white once selected.
+- Dragging gives a haptic tap on a trackpad as rows move, as you cross the separator, and as you go into or out of a folder.
 - **Cmd/Ctrl+Z** reopens what you just closed, for ten seconds: whole folders, splits and groups of tabs come back as they were, a deleted folder with its name.
 - Asleep tabs can be dimmed (tabs, essentials, and folders whose tabs are all asleep).
 - Zen's pop-up notices get a close button, so they don't have to be waited out.
@@ -131,8 +136,9 @@ Essentials sit as tiles, four to a row (six when the sidebar is wide). A space's
 <details>
 <summary>Folders</summary>
 
-- Hover boxes, a gentle spring when they open and close, icon or emoji covers, and an × to delete them.
-- A colour of their own from the right-click menu that tints the whole folder.
+- Hover boxes, icon or emoji covers, and an × to delete them.
+- They open and close as in Dia: the tabs stay where they are while the folder opens over them, and fade out in place as it closes, with a gentle spring (or without).
+- A colour of their own from the right-click menu that tints the whole folder, or, if you prefer, only when it's hovered or open.
 - An empty folder shows a dashed *Drag tabs here* slot until its first tab arrives.
 - Plain tab groups, like the ones [Advanced Tab Groups](https://github.com/Vertex-Mods/Advanced-Tab-Groups) makes, get the same treatment.
 
@@ -221,9 +227,10 @@ Just the video at rest; hover for the controls. Need the screen back? Throw the 
 <details>
 <summary>More</summary>
 
-- **Controls:** Back to Tab and Close at the top with the site between them; big 15-second skip and play/pause buttons in the middle; speaker, volume line and time in the bottom left; a thin progress line along the bottom.
+- **Controls:** Back to Tab, Minimise (away, still playing in its tab) and Close at the top with the site between them; big 15-second skip and play/pause buttons in the middle; speaker, volume line and time in the bottom left; a thin progress line along the bottom.
 - **Tucking:** tuck into the left or right side, the bottom, or a bottom corner. Let go with a good part of the window off the edge, or flick it, and it springs the rest of the way, leaving a slim frosted strip (or a small frosted corner). A throw near a corner is pulled into it.
-- The tuck button beside Close uses your default spot; the arrow beside it opens a map of the screen to pick one or change the default.
+- The tuck button beside Close uses your default spot; right-click it for a map of the screen to pick one or change the default.
+- The music card stays in the sidebar while its video plays in picture-in-picture, and the window has rounded corners on Windows 11 too.
 - With more than one screen, edges your screens share are skipped, so it never hides onto another screen.
 - Hover the strip and the video peeks out; click it, or drag it out, and it stays out until you tuck it again. Drag the strip along its side to move it; near the bottom it snaps into the corner.
 - There are no top spots: macOS won't move a window up past the top of the screen.
@@ -298,6 +305,7 @@ The first folder takes a little while as the model downloads and the icon names 
 | --- | --- |
 | **Features** | |
 | Music player card | on |
+| Music player card stays when you send its video to picture-in-picture | on |
 | Find in page bar | on |
 | Icon picker (5,166 Tabler icons, outline and solid) | on |
 | Undo a closed tab with Cmd/Ctrl+Z | on |
@@ -307,6 +315,7 @@ The first folder takes a little while as the model downloads and the icon names 
 | **Tabs** | |
 | Sound bars on playing tabs (off: Zen's speaker) | on |
 | Tint the selected tab's glow and the sound bars with the site's colours | off |
+| Essentials are Zia's narrower tiles (off: Zen's own widths) | on |
 | The last essential stretches across the rest of its row | off |
 | Split essentials (experimental): drag a two-site split onto the essentials | on |
 | Asleep (unloaded) tabs, essentials and folders look dimmed | off |
@@ -317,21 +326,24 @@ The first folder takes a little while as the model downloads and the icon names 
 | Zia's rounded page corners (off: Zen's own) | on |
 | Split view drop cards when dragging a tab onto the page (off: Zen's own) | on |
 | PDFs open in Zia's viewer look (off: Firefox's own) | on |
+| Hide the window buttons (minimise, maximise, close) on Windows and Linux | off |
 | **Address bar** | |
 | Zia's address bar pop-up (off: Zen's own) | on |
 | Address bar pop-up takes the toolbar's colour as it opens (needs the site-coloured toolbar) | off |
 | Address bar pop-up is slightly see-through, with the page blurred behind it | on |
+| Address bar shows only the page's title, in the domain's colour, until clicked | off |
 | Address bar position: top or bottom (not with Zen's single toolbar) | top |
 | **New tabs** | |
 | Cmd/Ctrl+T and **+ New Tab** open a real tab (off: Zen's floating address bar) | on |
 | New tabs open your default search engine's page | on |
 | **Folders** | |
 | Folders open and close with a gentle spring | on |
+| Coloured folders only show their colour when hovered or open | off |
 | **Loading bar** | |
 | Use Zen's accent colour for the loading bar (off: Zia blue) | off |
 | **Picture-in-picture** | |
 | Zia's picture-in-picture controls (off: Firefox's own) | on |
-| Tuck picture-in-picture into the side of the screen | on |
+| Push picture-in-picture against the side of the screen to tuck it away | on |
 | Picture-in-picture tucks into (the nearest side, a side, the bottom or a bottom corner) | the nearest side |
 | **Multiview** | |
 | **Add to Multiview** on videos and tabs | on |
