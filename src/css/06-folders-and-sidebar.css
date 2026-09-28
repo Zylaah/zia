@@ -681,10 +681,27 @@ zen-folder[collapsed][has-active] :is(zen-folder, tab-group:not([split-view-grou
   --zen-folder-indent: 14px !important;
 }
 
+/* Zen leaves the other tabs in that inner folder at their full height (it
+   only shrinks the closed folder's own), see-through, so the inner folder's
+   box stretched far below the tab shown. They shrink away with the rest:
+   no height, so their minimum height, which can be animated, sets it. */
+zen-folder[collapsed][has-active] :is(zen-folder, tab-group:not([split-view-group])) .tabbrowser-tab:not([selected], [visuallyselected], [folder-active="true"], [atg-folder-active], tab-group[split-view-group] > .tabbrowser-tab) {
+  height: 0 !important;
+  min-height: 0 !important;
+  margin-block: 0 !important;
+  overflow: clip !important;
+  transition:
+    min-height 0.18s ease-in-out,
+    margin-block 0.18s ease-in-out !important;
+}
+
 /* ...and a folder in it that Zen hides goes entirely: its box and outline
-   stayed as a thin line that could still be hovered */
+   stayed as a thin line that could still be hovered, and, open, its room at
+   the bottom left a gap under the tab shown */
 zen-folder[collapsed][has-active] :is(zen-folder, tab-group:not([split-view-group])):not(:has(.tabbrowser-tab[selected])) {
   pointer-events: none;
+  padding-bottom: 0 !important;
+  transition: padding-bottom 0.18s ease-in-out !important;
 
   &::before,
   &::after {

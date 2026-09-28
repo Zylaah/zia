@@ -4,6 +4,14 @@ Every release of Zia, newest first. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Fixed
+
+- A closed folder showing its selected tab no longer leaves a gap under
+  the tab when a folder inside it is open: the inner folder's other tabs
+  and room shrink away with the rest.
+
 ## [2.70.8] — 2026-09-28
 
 ### Fixed
