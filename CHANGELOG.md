@@ -8,8 +8,6 @@ Every release of Zia, newest first. The format follows
 
 ### Changed
 
-- The space between the tab list and the bottom icons (or the music
-  player) matches the space under the essentials.
 - Dragging a tab, folder or split into or out of a folder (open or
   closed) gives a haptic tap, like the other moments in a drag.
 - Opening or closing a folder, its tabs stay in place, as in Dia, instead
