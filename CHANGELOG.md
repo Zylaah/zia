@@ -4,6 +4,17 @@ Every release of Zia, newest first. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Fixed
+
+- A new, empty folder is no longer given a suggested icon (it only ever
+  had its default name to go by).
+- Renaming a tab or folder, the text stays the size it is in the list.
+- The address bar's "Switch to tab" tag no longer slips off the end of a
+  row with a long title (a sliver of it showed at the edge).
+- "Switch to tab:" in the address itself is the same size as the address.
+
 ## [2.70.0] — 2026-09-28
 
 ### Added
