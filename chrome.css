@@ -2084,6 +2084,17 @@ zen-folder > .tab-group-label-container > .zia-folder-close:hover {
 .tab-group-container[zia-folder-holding] {
   overflow-y: clip !important;
 }
+
+/* A space collapsed (its name clicked) with a tab open in one of its
+   folders: Zen keeps just that tab, and hides its folder's name too. The
+   folder's name stays (and any folder it's in), so the tab isn't left
+   floating on its own. */
+zen-workspace[collapsedpinnedtabs] :is(zen-folder, tab-group:not([split-view-group])):has(.tabbrowser-tab[selected]) > .tab-group-label-container {
+  height: auto !important;
+  min-height: revert !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
 #zia-tab-card,
 #zia-folder-card {
   clip-path: inset(0 round var(--zia-tab-card-radius));
