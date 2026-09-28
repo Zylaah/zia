@@ -56,6 +56,21 @@ zen-folder[collapsed][has-active] > .tab-group-container {
   clip-path: inset(var(--zia-glow-room));
 }
 
+/* ...and the same while Zen opens or shuts a folder holding the open tab:
+   it clips the folder's contents then, and the tab's glow was cut off for
+   a moment (a folder Zia's own opening holds is clipped by its height) */
+zen-folder:has(> .tab-group-container > :is(.tabbrowser-tab, tab-group[split-view-group]):is([selected], [visuallyselected], :has(.tabbrowser-tab[selected]))) > .tab-group-container:not([zia-folder-holding]) {
+  --zia-glow-room: calc(-1 * (var(--zia-active-glow-blur) + var(--zia-active-glow-spread) + var(--zia-active-glow-reach)));
+  overflow: visible !important;
+  clip-path: inset(var(--zia-glow-room));
+}
+
+/* Growing back from nothing as a folder opens, a tab's name and icon
+   spilled out of it, so the tabs showed piled up for a moment */
+:is(zen-folder, tab-group:not([split-view-group])) > .tab-group-container > .tabbrowser-tab:not([selected], [visuallyselected]) {
+  overflow-y: clip;
+}
+
 zen-folder[collapsed][has-active] .tabbrowser-tab:not([selected], [visuallyselected], [folder-active="true"], [atg-folder-active], tab-group[split-view-group] > .tabbrowser-tab) {
   opacity: 0 !important;
   /* (fading as Zen shrinks them, rather than gone at once, which showed as

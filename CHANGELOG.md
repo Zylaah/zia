@@ -16,6 +16,9 @@ Every release of Zia, newest first. The format follows
   fade as they go rather than leaving an empty gap for a moment.
 - Selecting a tab elsewhere, a closed folder still showing its last tab
   keeps the inner folder's name above it.
+- Opening or shutting a folder holding the open tab no longer cuts off
+  that tab's glow for a moment, and its other tabs no longer show piled up
+  as they grow back.
 
 ## [2.70.8] — 2026-09-28
 
