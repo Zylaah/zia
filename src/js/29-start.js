@@ -248,6 +248,7 @@
     safely("watchTabAnimations", watchTabAnimations);
     safely("moveTabsLikeDia", moveTabsLikeDia);
     safely("addFolderBounce", addFolderBounce);
+    safely("keepFolderNamesInCollapsedSpaces", keepFolderNamesInCollapsedSpaces);
     safely("allowEmojiFolderIcons", allowEmojiFolderIcons);
     safely("hideWwwInUrlbar", hideWwwInUrlbar);
     safely("watchRightEdges", watchRightEdges);
