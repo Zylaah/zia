@@ -128,6 +128,8 @@
     // place and drop back.
     const past = to + Math.sign(to - from) * Math.min(FOLDER_OVERSHOOT_PX, Math.abs(to - from) / 4);
     return {
+      from,
+      to,
       closing: to < from,
       keyframes: pixelSteps("marginTop", [[0, from, EASE_OUT], [0.62, past, EASE_IN_OUT], [1, to]], FOLDER_SPRING_MS, to),
       options: { ...options, duration: FOLDER_SPRING_MS, easing: "linear" },
@@ -153,47 +155,65 @@
 
   // Zen opens a folder by sliding everything in it down from under its
   // name (a margin on its start, clipped by the folder). As in Dia, the
-  // tabs stay where they sit instead: the folder opens over them and the
-  // rows below move, and closing, they fade out in place. They're moved
-  // back by exactly the margin: the same steps, run on the folder as a
-  // variable its tabs' position reads (06), started with the margin's own
-  // animation so the two never drift a frame apart.
-  function holdFolderContents(start, marginFrames, closing, animate) {
+  // tabs stay where they sit instead and the folder opens over them: the
+  // margin goes straight to where it ends (opening) or stays until the end
+  // (closing), and the folder's height takes its motion instead, frame for
+  // frame, so the rows below move just as before. Closing, the tabs fade
+  // out in place.
+  function holdFolderContents(start, spring, animate) {
     const container = start.parentElement;
     if (!container?.classList?.contains("tab-group-container")) {
-      return;
+      return null;
     }
-    const token = {};
-    container.ziaHold?.stop?.();
-    container.ziaHold = token;
-    const hold = marginFrames.map((frame) => {
-      const step = { offset: frame.offset, "--zia-hold-y": `${-(parseFloat(frame.marginTop) || 0)}px` };
+    const { from, to, closing } = spring;
+    // the folder's height with the margin at each end
+    const saved = start.style.marginTop;
+    start.style.marginTop = `${from}px`;
+    const fromHeight = container.getBoundingClientRect().height;
+    start.style.marginTop = `${to}px`;
+    const toHeight = container.getBoundingClientRect().height;
+    start.style.marginTop = saved;
+    if (!(Math.abs(toHeight - fromHeight) > 0.5)) {
+      return null;
+    }
+    const heights = spring.keyframes.map((frame) => {
+      const k = ((parseFloat(frame.marginTop) || 0) - from) / (to - from);
+      const step = { offset: frame.offset, height: `${Math.max(0, fromHeight + k * (toHeight - fromHeight))}px` };
       if (frame.easing) {
         step.easing = frame.easing;
       }
       return step;
     });
+    const margin = closing
+      ? [{ marginTop: `${from}px` }, { marginTop: `${from}px`, offset: 0.999 }, { marginTop: `${to}px` }]
+      : [{ marginTop: `${to}px` }, { marginTop: `${to}px` }];
+
+    container.ziaHold?.();
     const items = [...container.children].filter((child) => child !== start);
     const fades = closing
       ? items.map((item) =>
           animate.call(item, [{ opacity: 1 }, { opacity: 0 }], { duration: 220, easing: "ease-in", fill: "forwards" })
         )
       : [];
-    const holding = animate.call(container, hold, { duration: FOLDER_SPRING_MS, fill: "forwards" });
     container.setAttribute("zia-folder-holding", "true");
+    const growing = animate.call(container, heights, { duration: FOLDER_SPRING_MS });
+    let done = false;
     const stop = () => {
-      if (container.ziaHold !== token) {
+      if (done) {
         return;
       }
-      container.ziaHold = null;
-      container.removeAttribute("zia-folder-holding");
-      holding.cancel();
+      done = true;
+      if (container.ziaHold === stop) {
+        container.ziaHold = null;
+        container.removeAttribute("zia-folder-holding");
+      }
+      growing.cancel();
       for (const fade of fades) {
         fade.cancel();
       }
     };
-    token.stop = stop;
-    holding.finished.then(() => {
+    container.ziaHold = stop;
+    growing.finished.then(() => {
       // closing, the faded tabs stay as they are until the folder hides them
       if (!closing) {
         stop();
@@ -209,6 +229,7 @@
       };
       wait();
     }, () => {});
+    return margin;
   }
 
   // With a tab selected inside it, Zen leaves the folder's start where it
@@ -364,13 +385,13 @@
       if (spring.closing) {
         bounceUpAfterClosing(this.parentElement, animate);
       }
-      const running = animate.call(this, spring.keyframes, spring.options);
+      let margin = null;
       try {
-        holdFolderContents(this, spring.keyframes, spring.closing, animate);
+        margin = holdFolderContents(this, spring, animate);
       } catch (err) {
         noteError("folder bounce: hold contents", err);
       }
-      return running;
+      return animate.call(this, margin || spring.keyframes, spring.options);
     };
     patched.__zia = true;
     Element.prototype.animate = patched;

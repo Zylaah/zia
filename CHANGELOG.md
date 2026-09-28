@@ -9,7 +9,8 @@ Every release of Zia, newest first. The format follows
 ### Changed
 
 - Dragging a tab, folder or split into or out of a folder (open or
-  closed) gives a haptic tap, like the other moments in a drag.
+  closed), or across the separator, gives a haptic tap, like the other
+  moments in a drag.
 - Opening or closing a folder, its tabs stay in place, as in Dia, instead
   of sliding down from under the folder's name: the folder opens over
   them, and closing, they fade out where they are.

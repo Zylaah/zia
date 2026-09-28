@@ -688,6 +688,10 @@
         } else if (!startedBelow && visualMid > drag.sepTop + 2) {
           sepDelta = -drag.pitch;
         }
+        // crossing the separator taps like a row moving does
+        if (drag.sepDelta !== sepDelta && (drag.sepDelta || sepDelta)) {
+          rowsMoved = true;
+        }
         placeSep(sepDelta);
       }
       if (rowsMoved) {
