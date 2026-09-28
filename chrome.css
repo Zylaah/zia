@@ -2022,11 +2022,20 @@ zen-folder > .tab-group-label-container > .zia-folder-close:hover {
     translate: 0 var(--zia-slot-y, 0px);
     pointer-events: none;
     transition:
-      height var(--zia-spring-time) var(--zia-spring),
-      margin var(--zia-spring-time) var(--zia-spring),
-      border-width var(--zia-spring-time) var(--zia-spring),
+      height var(--zia-slot-time, 0.25s) var(--zia-slot-ease, ease-in-out),
+      margin var(--zia-slot-time, 0.25s) var(--zia-slot-ease, ease-in-out),
+      border-width var(--zia-slot-time, 0.25s) var(--zia-slot-ease, ease-in-out),
       opacity 180ms ease-in-out,
       translate 100ms ease-out;
+  }
+
+  /* the spring only with folders' own spring on; otherwise a plain ease,
+     like Zen's */
+  @media -moz-pref("zia.folders.bounce") {
+    & > .tab-group-container::after {
+      --zia-slot-time: var(--zia-spring-time);
+      --zia-slot-ease: var(--zia-spring);
+    }
   }
 
   &[collapsed] > .tab-group-container::after {
