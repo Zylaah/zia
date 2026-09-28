@@ -306,6 +306,7 @@ The first folder takes a little while as the model downloads and the icon names 
 | **Features** | |
 | Music player card | on |
 | Music player card stays when you send its video to picture-in-picture | on |
+| Music player shows a YouTube channel's picture instead of the video's thumbnail | on |
 | Find in page bar | on |
 | Icon picker (5,166 Tabler icons, outline and solid) | on |
 | Undo a closed tab with Cmd/Ctrl+Z | on |

@@ -4,7 +4,12 @@ Every release of Zia, newest first. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [2.71.0] — 2026-09-28
+
+### Added
+
+- The music player shows a YouTube channel's picture instead of the
+  video's thumbnail. On by default; a setting turns it off.
 
 ### Fixed
 
