@@ -1876,6 +1876,21 @@ zen-split-fake-tab {
   }
 }
 
+/* Optionally, a closed coloured folder is just its coloured name: the
+   tint and outline come in on hover and stay while it's open (or showing
+   its open tab, or taking a dragged tab) */
+@media -moz-pref("zia.folders.tint-when-open") {
+  :root[zen-sidebar-expanded="true"] :is(zen-folder[zia-folder-color], tab-group:not([split-view-group]))[collapsed]:not(:hover, [zia-drop-slot], :has(.tabbrowser-tab[selected])) {
+    &::before {
+      background-color: transparent !important;
+    }
+
+    &::after {
+      opacity: 0 !important;
+    }
+  }
+}
+
 /* Advanced Tab Groups: a group wears its own colour; gradients arrive via --zia-group-swatch (zia.uc.js) */
 :root[zen-sidebar-expanded="true"] tab-group:not([split-view-group]) {
   --zia-folder-swatch: var(--zia-group-swatch, var(--tab-group-background-color, var(--tab-group-color, var(--zia-fc-white))));

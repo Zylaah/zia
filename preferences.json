@@ -208,6 +208,12 @@
     "defaultValue": true
   },
   {
+    "type": "checkbox",
+    "label": "Coloured folders only show their colour when hovered or open",
+    "property": "zia.folders.tint-when-open",
+    "defaultValue": false
+  },
+  {
     "type": "separator",
     "label": "Loading bar"
   },
