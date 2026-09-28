@@ -4,6 +4,14 @@ Every release of Zia, newest first. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Fixed
+
+- On vivid site colours a little on the dark side (a strong red, say), the
+  address is white and the rest of it after the slash stays readable,
+  instead of a soft grey that all but vanished.
+
 ## [2.69.4] — 2026-09-28
 
 ### Fixed

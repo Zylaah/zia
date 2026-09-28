@@ -42,12 +42,17 @@
     root.style.setProperty("--zia-site-bg", cssColor(rgb));
     const brightness = brightnessOf(rgb);
     const light = wantsDarkInk(rgb);
+    // A vivid colour (a strong red, say) is treated as mid even when it's a
+    // little darker: the dark sites' soft grey ink, and the fainter rest of
+    // the address, all but vanished on it.
+    const vivid = !light && brightness >= 40 && Math.max(...rgb.slice(0, 3)) - Math.min(...rgb.slice(0, 3)) >= 110;
+    const mid = !light && (brightness >= INK_MAX || vivid);
     setFlag("zia-site-light", light);
-    setFlag("zia-site-dark", brightness < INK_MAX);
+    setFlag("zia-site-dark", brightness < INK_MAX && !vivid);
     // Between the two (a strong red, say), white text stays but nothing on
     // the toolbar is left faint.
-    setFlag("zia-site-mid", !light && brightness >= INK_MAX);
-    updateDarkSiteInk(rgb, brightness);
+    setFlag("zia-site-mid", mid);
+    updateDarkSiteInk(rgb, mid ? INK_MAX : brightness);
   }
 
   function updateDarkSiteInk(rgb, brightness, inkOnly = false) {
