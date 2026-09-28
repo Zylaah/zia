@@ -4,20 +4,23 @@ Every release of Zia, newest first. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [2.69.0] — 2026-09-28
 
 ### Changed
 
-- Dragging a tab, folder or split into or out of a folder (open or
-  closed), or across the separator, gives a haptic tap, like the other
-  moments in a drag.
 - Opening or closing a folder, its tabs stay in place, as in Dia, instead
   of sliding down from under the folder's name: the folder opens over
   them, and closing, they fade out where they are.
-- Dragging a tab up past the separator opens a space below the last
-  folder, instead of dropping it straight into that folder.
 - Tabs you're not on are a little dimmer (in folders and splits too),
   going white once selected, as in Dia.
+
+### Fixed
+
+- Dragging a tab, folder or split into or out of a folder (open or
+  closed), or across the separator, now gives a haptic tap, like the other
+  moments in a drag.
+- Dragging a tab up past the separator opens a space below the last
+  folder, instead of dropping it straight into that folder.
 
 ## [2.68.0] — 2026-09-28
 
