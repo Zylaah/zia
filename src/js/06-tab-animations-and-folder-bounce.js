@@ -166,10 +166,15 @@
       return null;
     }
     const { from, to, closing } = spring;
+    // Turned round part way (clicked again before it finished), it goes
+    // on from the height it's at, measured before the last one's stopped
+    const turning = !!container.ziaHold;
+    const shown = container.getBoundingClientRect().height;
+    container.ziaHold?.();
     // the folder's height with the margin at each end
     const saved = start.style.marginTop;
     start.style.marginTop = `${from}px`;
-    const fromHeight = container.getBoundingClientRect().height;
+    const fromHeight = turning ? shown : container.getBoundingClientRect().height;
     start.style.marginTop = `${to}px`;
     const toHeight = container.getBoundingClientRect().height;
     start.style.marginTop = saved;
@@ -188,7 +193,6 @@
       ? [{ marginTop: `${from}px` }, { marginTop: `${from}px`, offset: 0.999 }, { marginTop: `${to}px` }]
       : [{ marginTop: `${to}px` }, { marginTop: `${to}px` }];
 
-    container.ziaHold?.();
     const items = [...container.children].filter((child) => child !== start);
     const fades = closing
       ? items.map((item) =>
