@@ -4,6 +4,13 @@ Every release of Zia, newest first. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Fixed
+
+- A Kick stream in the music player shows the streamer's picture, as Twitch
+  does, instead of Kick's icon.
+
 ## [2.70.6] — 2026-09-28
 
 ### Fixed
