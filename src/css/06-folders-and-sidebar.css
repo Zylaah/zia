@@ -592,3 +592,9 @@ zen-folder > .tab-group-label-container > .zia-folder-close:hover {
     background-color: color-mix(in srgb, var(--zia-folder-swatch) var(--zia-folder-tint), transparent);
   }
 }
+
+/* While a folder opens or closes, its tabs sit in their places and the
+   folder clips them as its height grows or shrinks (zia.uc.js) */
+.tab-group-container[zia-folder-holding] {
+  overflow-y: clip !important;
+}

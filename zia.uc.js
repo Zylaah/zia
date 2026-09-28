@@ -1663,6 +1663,8 @@
     // place and drop back.
     const past = to + Math.sign(to - from) * Math.min(FOLDER_OVERSHOOT_PX, Math.abs(to - from) / 4);
     return {
+      from,
+      to,
       closing: to < from,
       keyframes: pixelSteps("marginTop", [[0, from, EASE_OUT], [0.62, past, EASE_IN_OUT], [1, to]], FOLDER_SPRING_MS, to),
       options: { ...options, duration: FOLDER_SPRING_MS, easing: "linear" },
@@ -1684,6 +1686,105 @@
       pixelSteps("marginBottom", [[0, 0, null], [0.45, 0, EASE_OUT], [0.66, -FOLDER_CLOSE_BOUNCE_PX, EASE_IN_OUT], [1, 0]], FOLDER_SPRING_MS, 0),
       { duration: FOLDER_SPRING_MS }
     );
+  }
+
+  // Zen opens a folder by sliding everything in it down from under its
+  // name (a margin on its start, clipped by the folder). As in Dia, the
+  // tabs stay where they sit instead and the folder opens over them: the
+  // margin goes straight to where it ends (opening) or stays until the end
+  // (closing), and the folder's height takes its motion instead, frame for
+  // frame, so the rows below move just as before. Closing, the tabs fade
+  // out in place.
+  function holdFolderContents(start, spring, animate) {
+    const container = start.parentElement;
+    if (!container?.classList?.contains("tab-group-container")) {
+      return null;
+    }
+    const { from, to, closing } = spring;
+    // Turned round part way (clicked again before it finished), it goes
+    // on from the height it's at, measured before the last one's stopped
+    const turning = !!container.ziaHold;
+    const shown = container.getBoundingClientRect().height;
+    container.ziaHold?.();
+    // the folder's height with the margin at each end
+    const saved = start.style.marginTop;
+    start.style.marginTop = `${from}px`;
+    const fromHeight = turning ? shown : container.getBoundingClientRect().height;
+    start.style.marginTop = `${to}px`;
+    const toHeight = container.getBoundingClientRect().height;
+    start.style.marginTop = saved;
+    if (!(Math.abs(toHeight - fromHeight) > 0.5)) {
+      return null;
+    }
+    const heights = spring.keyframes.map((frame) => {
+      const k = ((parseFloat(frame.marginTop) || 0) - from) / (to - from);
+      const step = { offset: frame.offset, height: `${Math.max(0, fromHeight + k * (toHeight - fromHeight))}px` };
+      if (frame.easing) {
+        step.easing = frame.easing;
+      }
+      return step;
+    });
+    const margin = closing
+      ? [{ marginTop: `${from}px` }, { marginTop: `${from}px`, offset: 0.999 }, { marginTop: `${to}px` }]
+      : [{ marginTop: `${to}px` }, { marginTop: `${to}px` }];
+
+    const items = [...container.children].filter((child) => child !== start);
+    const fades = closing
+      ? items.map((item) =>
+          animate.call(item, [{ opacity: 1 }, { opacity: 0 }], { duration: 220, easing: "ease-in", fill: "forwards" })
+        )
+      : [];
+    container.setAttribute("zia-folder-holding", "true");
+    const growing = animate.call(container, heights, { duration: FOLDER_SPRING_MS });
+    let done = false;
+    const unfade = () => {
+      for (const fade of fades) {
+        fade.cancel();
+      }
+      gBrowser.tabContainer.removeEventListener("TabSelect", onSelect);
+      window.removeEventListener("TabGroupExpand", onOpen, true);
+    };
+    // (however it's opened: not every opening comes through here)
+    const onOpen = (event) => {
+      if (event.target === container.parentElement) {
+        stop();
+      }
+    };
+    // A tab selected inside the closed folder is shown by Zen: it can't
+    // stay faded out
+    const onSelect = () => {
+      if (container.contains(gBrowser.selectedTab)) {
+        unfade();
+      }
+    };
+    const stop = () => {
+      if (done) {
+        return;
+      }
+      done = true;
+      if (container.ziaHold === stop) {
+        container.ziaHold = null;
+      }
+      container.removeAttribute("zia-folder-holding");
+      growing.cancel();
+      unfade();
+    };
+    container.ziaHold = stop;
+    growing.finished.then(() => {
+      if (!closing) {
+        stop();
+        return;
+      }
+      // Closed, the tabs stay faded out: Zen leaves them just above the
+      // folder, and shown again there they flashed over the rows above.
+      // They come back as it opens again (stop, from its next animation)
+      // or when one of them is selected.
+      container.removeAttribute("zia-folder-holding");
+      growing.cancel();
+      gBrowser.tabContainer.addEventListener("TabSelect", onSelect);
+      window.addEventListener("TabGroupExpand", onOpen, true);
+    }, () => {});
+    return margin;
   }
 
   // With a tab selected inside it, Zen leaves the folder's start where it
@@ -1839,12 +1940,19 @@
       if (spring.closing) {
         bounceUpAfterClosing(this.parentElement, animate);
       }
-      return animate.call(this, spring.keyframes, spring.options);
+      let margin = null;
+      try {
+        margin = holdFolderContents(this, spring, animate);
+      } catch (err) {
+        noteError("folder bounce: hold contents", err);
+      }
+      return animate.call(this, margin || spring.keyframes, spring.options);
     };
     patched.__zia = true;
     Element.prototype.animate = patched;
     window.addEventListener("TabGroupCollapse", noteFolderMotion, true);
     window.addEventListener("TabGroupExpand", noteFolderMotion, true);
+
   }
 
   function hideWwwInUrlbar() {
@@ -8719,9 +8827,17 @@
       if (prev && same(prev)) {
         // the last folder before the separator has no row after it: its
         // slot is a whole tab tall, not the sliver down to the separator
-        const down = !same(next) && slotTop != null ? slotTop + drag.height + 10 : leaveDown(next);
-        if (down != null) {
-          cut = (leaveUp(prev) + down) / 2;
+        if (!same(next) && slotTop != null) {
+          // Coming up past the separator, the tab lands below the last
+          // folder first; it goes in only once its middle is over the
+          // folder's own end. (Halfway through the slot, as below, left
+          // a band of a few pixels, so it seemed to drop straight in.)
+          cut = slotTop + 2;
+        } else {
+          const down = leaveDown(next);
+          if (down != null) {
+            cut = (leaveUp(prev) + down) / 2;
+          }
         }
       }
       let folder = null;
@@ -8749,6 +8865,12 @@
       const hand = drag.folder
         ? true
         : drag.split ? crosses && !folder : !!folder || !!pf || (!!nf && isFolderStart(next, nf)) || crosses;
+      // A tap on going into a folder, open or closed, or out of one (Zen's
+      // own taps are muted during a drag). Not for the one it's in as it
+      // starts.
+      if (drag.target && folder !== drag.target.folder) {
+        tap();
+      }
       drag.target = { folder, atEnd, prev, next, below, sameNext: same(next), slotTop, hand };
       setDropSlot(folder);
     };
@@ -9130,6 +9252,10 @@
           sepDelta = drag.pitch;
         } else if (!startedBelow && visualMid > drag.sepTop + 2) {
           sepDelta = -drag.pitch;
+        }
+        // crossing the separator taps like a row moving does
+        if (drag.sepDelta !== sepDelta && (drag.sepDelta || sepDelta)) {
+          rowsMoved = true;
         }
         placeSep(sepDelta);
       }

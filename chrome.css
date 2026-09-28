@@ -2078,6 +2078,12 @@ zen-folder > .tab-group-label-container > .zia-folder-close:hover {
     background-color: color-mix(in srgb, var(--zia-folder-swatch) var(--zia-folder-tint), transparent);
   }
 }
+
+/* While a folder opens or closes, its tabs sit in their places and the
+   folder clips them as its height grows or shrinks (zia.uc.js) */
+.tab-group-container[zia-folder-holding] {
+  overflow-y: clip !important;
+}
 #zia-tab-card,
 #zia-folder-card {
   clip-path: inset(0 round var(--zia-tab-card-radius));
@@ -2649,8 +2655,10 @@ zen-workspace arrowscrollbox::part(scrollbox) {
   margin-inline-end: calc(var(--zia-folder-right-fix, 0px) + 3 * var(--zia-folder-inner-gap, 5px)) !important;
 }
 
+/* As in Dia, a tab that isn't the one you're on is a little dimmer, hovered
+   or not, and goes white once selected */
 .tabbrowser-tab:not([zen-essential]) .tab-label-container {
-  color: rgba(255, 255, 255, 0.9) !important;
+  color: rgba(255, 255, 255, 0.8) !important;
   opacity: 1 !important;
 }
 
