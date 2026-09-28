@@ -1838,6 +1838,12 @@ zen-split-fake-tab {
   opacity: 0.6 !important;
 }
 
+/* The + and "New Tab" line up with the tabs' icons and names above (they
+   sat a pixel and a half to the left) */
+:is(#tabs-newtab-button, #vertical-tabs-newtab-button) > :is(.toolbarbutton-icon, .toolbarbutton-text) {
+  translate: 1.5px 0;
+}
+
 /* "New Tab" is the size and weight of the tabs' names (it kept Zen's own,
    a little bigger) */
 :is(#tabs-newtab-button, #vertical-tabs-newtab-button) > .toolbarbutton-text {
