@@ -108,7 +108,7 @@
   --zia-urlbar-height: 31px;
   --zia-active-tab-bg: rgba(0, 0, 0, 0.2);
   --zia-space-name-tint: 42%;
-  --zia-card-shadow: 0 0 0 0.5px rgba(0, 0, 0, 0.35), 0 1px 4px rgba(0, 0, 0, 0.3);
+  --zia-card-shadow: 0 0 0 0.5px rgba(0, 0, 0, 0.16), 0 1px 4px rgba(0, 0, 0, 0.18);
   --zia-hover-card-shadow: none;
   --zia-color-fade: 0.15s;
 }
@@ -365,6 +365,22 @@
 
   & :is(.urlbarView-action.urlbarView-switchToTab, .urlbarView-row[type="switchtab"] .urlbarView-action) {
     display: none !important;
+  }
+
+  /* An open tab says so: a small "Switch to tab" tag at the end of its row
+     (Firefox's own action text is hidden above) */
+  & .urlbarView-row[type="switchtab"] .urlbarView-row-inner::after {
+    content: "Switch to tab";
+    flex: none;
+    margin-inline: auto 8px;
+    padding: 2px 7px;
+    border-radius: 6px;
+    background-color: color-mix(in srgb, currentColor 10%, transparent);
+    color: color-mix(in srgb, currentColor 60%, transparent);
+    font-size: 11px;
+    font-weight: 500;
+    line-height: 16px;
+    white-space: nowrap;
   }
 
   & :is(.urlbarView, .urlbarView-body-outer, .urlbarView-results, #urlbar-results) {
@@ -2570,14 +2586,11 @@ zen-folder > .tab-group-label-container > .zia-folder-close:hover {
 }
 
 /* Room at the end of the tab list for the last tab's glow, which the list
-   would otherwise cut off */
-:is(.workspace-arrowscrollbox, #tabbrowser-tabs, #tabbrowser-arrowscrollbox) {
-  padding-bottom: calc(var(--zia-active-glow-blur) + var(--zia-active-glow-spread) + var(--zia-active-glow-reach)) !important;
-}
-
-/* ...but the list's inner scroll box ends where the last row does and cuts
-   off anything past it, and it doesn't take padding of its own: the room
-   goes at the end of the tabs inside it, so it grows by that much */
+   would otherwise cut off. The list's inner scroll box ends where the last
+   row does and doesn't take padding of its own, so the room goes at the end
+   of the tabs inside it, and scrolls with them. (It used to be padding on
+   the list itself too, which sat outside the scrolling: with a long list it
+   showed as an empty band above the media cards.) */
 .zen-workspace-normal-tabs-section {
   padding-bottom: calc(var(--zia-active-glow-blur) + var(--zia-active-glow-spread) + var(--zia-active-glow-reach)) !important;
 }

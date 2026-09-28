@@ -145,6 +145,22 @@
     display: none !important;
   }
 
+  /* An open tab says so: a small "Switch to tab" tag at the end of its row
+     (Firefox's own action text is hidden above) */
+  & .urlbarView-row[type="switchtab"] .urlbarView-row-inner::after {
+    content: "Switch to tab";
+    flex: none;
+    margin-inline: auto 8px;
+    padding: 2px 7px;
+    border-radius: 6px;
+    background-color: color-mix(in srgb, currentColor 10%, transparent);
+    color: color-mix(in srgb, currentColor 60%, transparent);
+    font-size: 11px;
+    font-weight: 500;
+    line-height: 16px;
+    white-space: nowrap;
+  }
+
   & :is(.urlbarView, .urlbarView-body-outer, .urlbarView-results, #urlbar-results) {
     padding-inline: 0 !important;
     padding-block: 0 !important;

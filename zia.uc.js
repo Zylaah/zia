@@ -860,6 +860,8 @@
   }
 
   let urlbarTyping = false;
+  // What was last typed
+  let typedValue = "";
 
   // A site's address with nothing after it ends in a bare "/", which Zia
   // leaves off: youtube.com, not youtube.com/.
@@ -899,8 +901,14 @@
         const typing = urlbarTyping && gURLBar.focused;
         // While typing, the only writes are Firefox's own, like autofill
         // completing "yo" to "youtube.com/": that loses its bare "/" too.
-        // Typed characters don't come through here.
-        desc.set.call(this, typing ? (typeof next === "string" ? next.replace(BARE_SLASH, "$1") : next) : plainAddress(next));
+        // Typed characters don't come through here. A "/" typed on the end
+        // stays, though: autofill writes "twitch.tv/" back for it, and
+        // taking that off undid the key press.
+        const keepSlash = typing && typedValue.endsWith("/");
+        desc.set.call(
+          this,
+          typing ? (typeof next === "string" && !keepSlash ? next.replace(BARE_SLASH, "$1") : next) : plainAddress(next)
+        );
 
         if (holdWholeSelection && gURLBar.focused) {
           this.select();
@@ -910,6 +918,8 @@
     input.addEventListener("input", (event) => {
       if (event.isTrusted) {
         urlbarTyping = true;
+        // (up to the caret: an autofilled ending after it may already be in)
+        typedValue = desc.get.call(input).slice(0, input.selectionStart ?? undefined);
       }
     });
     input.addEventListener("keydown", (event) => {
@@ -919,6 +929,7 @@
     });
     input.addEventListener("blur", () => {
       urlbarTyping = false;
+      typedValue = "";
     });
   }
 
