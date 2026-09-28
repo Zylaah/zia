@@ -4,6 +4,14 @@ Every release of Zia, newest first. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- An option for coloured folders to show their colour only when hovered or
+  open ("Coloured folders only show their colour when hovered or open", off
+  by default): closed, they're just their coloured name.
+
 ## [2.69.5] — 2026-09-28
 
 ### Fixed
