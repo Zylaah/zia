@@ -196,7 +196,11 @@
     const { to, closing } = spring;
     // It goes from the height it's at (turned round part way, clicked
     // again before it finished, measured before the last one's stopped)
-    const fromHeight = container.getBoundingClientRect().height;
+    // (reopened mid-close, the close was stopped a moment ago, when the
+    // folder said it was opening: the height it had got to was kept then)
+    const kept = container.ziaShown;
+    container.ziaShown = null;
+    const fromHeight = kept && performance.now() - kept.at < 100 ? kept.height : container.getBoundingClientRect().height;
     container.ziaHold?.();
     // to the folder's height open or shut, measured, not taken from the
     // margin: Zen's ends go stale mid-way, and an empty folder's margin
@@ -210,8 +214,13 @@
       toHeight = container.getBoundingClientRect().height;
     }
     start.style.marginTop = saved;
+    // Shut, the margin takes everything in the folder out of sight (Zen's
+    // own end can fall short when it's turned round part way)
+    const shut = Math.min(to, -openHeight);
+    // Already there: nothing moves (Zen's own slide would move the tabs)
     if (!(Math.abs(toHeight - fromHeight) > 0.5)) {
-      return null;
+      const still = `${closing ? shut : 0}px`;
+      return [{ marginTop: still }, { marginTop: still }];
     }
     const heights = spring.plain
       ? [{ height: `${fromHeight}px` }, { height: `${toHeight}px` }]
@@ -225,9 +234,6 @@
           spring.options.duration,
           toHeight
         );
-    // Shut, the margin takes everything in the folder out of sight (Zen's
-    // own end can fall short when it's turned round part way)
-    const shut = Math.min(to, -openHeight);
     const margin = closing
       ? [{ marginTop: "0px" }, { marginTop: "0px", offset: 0.999 }, { marginTop: `${shut}px` }]
       : [{ marginTop: "0px" }, { marginTop: "0px" }];
@@ -258,6 +264,8 @@
       // it then, as its margin never got as far as closed)
       const midway = growing.playState === "running";
       const shown = container.getBoundingClientRect().height;
+      // (for Zen's opening animation, which comes just after)
+      container.ziaShown = { height: shown, at: performance.now() };
       stop();
       if (!midway) {
         return;

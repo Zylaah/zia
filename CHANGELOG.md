@@ -12,6 +12,8 @@ Every release of Zia, newest first. The format follows
   every time, instead of moving in jumps or sometimes not bouncing.
 - Clicking a folder open and shut quickly no longer sometimes leaves it
   shut with an empty gap under its name.
+- Opening a folder again while it's still closing, its tabs no longer
+  slide down from above: it grows back open over them.
 - In a closed folder showing its selected tab, a folder inside it that's
   hidden no longer leaves a thin line that can be hovered, and an empty
   one's "Drag tabs here" box shrinks away smoothly with the rest.
