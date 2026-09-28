@@ -4,6 +4,13 @@ Every release of Zia, newest first. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Fixed
+
+- "+ New Tab" in the sidebar is the same size as the tabs' names (it was a
+  little bigger).
+
 ## [2.70.2] — 2026-09-28
 
 ### Fixed
