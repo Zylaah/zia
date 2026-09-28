@@ -4,6 +4,14 @@ Every release of Zia, newest first. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.70.6] — 2026-09-28
+
+### Fixed
+
+- With the downloads button hidden until there's a download, the first
+  download flies to the button as it appears, instead of dropping a square
+  in the bottom corner.
+
 ## [2.70.5] — 2026-09-28
 
 ### Fixed
