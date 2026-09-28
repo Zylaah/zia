@@ -2054,6 +2054,41 @@
   // has finished opening again.
   const SPACE_OPEN_MS = 700;
 
+  // A closed folder showing its selected tab keeps its other tabs see-
+  // through (chrome.css). Unloading the folder moves the selection out, and
+  // the moment it did, all its tabs showed piled on one row while Zen shut
+  // it. They stay see-through (the one that was showing fades) until Zen
+  // has, or the folder opens.
+  function keepTabsHiddenAfterActiveLeaves() {
+    const tabs = gBrowser.tabContainer;
+    if (!tabs) {
+      return;
+    }
+    const clear = (folder) => {
+      clearTimeout(folder.ziaWasActiveTimer);
+      folder.removeAttribute("zia-was-active");
+    };
+    new MutationObserver((records) => {
+      for (const { target, oldValue } of records) {
+        if (!isFolder(target) || oldValue === null || target.hasAttribute("has-active") || !target.hasAttribute("collapsed")) {
+          continue;
+        }
+        target.setAttribute("zia-was-active", "true");
+        clearTimeout(target.ziaWasActiveTimer);
+        target.ziaWasActiveTimer = setTimeout(() => clear(target), 700);
+      }
+    }).observe(tabs, { subtree: true, attributes: true, attributeFilter: ["has-active"], attributeOldValue: true });
+    window.addEventListener(
+      "TabGroupExpand",
+      (event) => {
+        if (event.target?.hasAttribute?.("zia-was-active")) {
+          clear(event.target);
+        }
+      },
+      true
+    );
+  }
+
   function keepFolderNamesInCollapsedSpaces() {
     const timers = new WeakMap();
     const update = (space) => {
@@ -12459,6 +12494,7 @@
     safely("moveTabsLikeDia", moveTabsLikeDia);
     safely("addFolderBounce", addFolderBounce);
     safely("keepFolderNamesInCollapsedSpaces", keepFolderNamesInCollapsedSpaces);
+    safely("keepTabsHiddenAfterActiveLeaves", keepTabsHiddenAfterActiveLeaves);
     safely("allowEmojiFolderIcons", allowEmojiFolderIcons);
     safely("hideWwwInUrlbar", hideWwwInUrlbar);
     safely("watchRightEdges", watchRightEdges);

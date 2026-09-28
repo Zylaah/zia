@@ -485,7 +485,9 @@
   transition: opacity 0.2s var(--zia-media-ease) !important;
 }
 
-#zen-media-controls-toolbar:not(:hover):has(.zen-media-card[stacked-behind]) .zen-media-card[stacked-behind] {
+/* (not while the front card fades away, when the one behind is about to
+   take its place: it showed as an almost empty card until it did) */
+#zen-media-controls-toolbar:not(:hover):has(.zen-media-card[stacked-behind]):not(:has(.zen-media-card:not([stacked-behind]):is([zen-hiding], [zen-removing]))) .zen-media-card[stacked-behind] {
   mask: linear-gradient(
     #000 0 calc(var(--zen-media-stack-peek, 8px) * var(--zen-media-card-peek-level, 1) / (1 - 0.04 * var(--zen-media-card-peek-level, 1))),
     transparent 0

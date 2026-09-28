@@ -14,6 +14,13 @@ Every release of Zia, newest first. The format follows
   empty and shrinks it back (2.70.5).
 - An empty folder inside a closed folder, with a tab selected in the outer
   one, no longer leaves its "Drag tabs here" box showing.
+- A closed folder showing a selected tab that sits in a folder inside it
+  keeps that inner folder's name above the tab, as it is open, instead of
+  a bare box round the tab.
+- Unloading a closed folder showing its selected tab, its tabs no longer
+  flash up piled on one row as it shuts.
+- When the front music player goes away, the one behind shows as it moves
+  up, instead of an almost empty card for a moment.
 
 ## [2.70.6] — 2026-09-28
 
