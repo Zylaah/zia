@@ -13,9 +13,6 @@ Every release of Zia, newest first. The format follows
 
 ### Changed
 
-- On dark sites the toolbar's text and buttons lean a little towards the
-  site's own colour, as in Dia (a navy site gets a blue-grey address rather
-  than a plain grey one).
 - The page's outline against the sidebar is lighter.
 - Corners are round throughout (except Zen's menus and panels), which
   fixes squarer corners on Windows (thanks Zylaah).
@@ -23,7 +20,8 @@ Every release of Zia, newest first. The format follows
 ### Fixed
 
 - Picture-in-picture: pulling a tucked window out keeps going once it's
-  fully on the screen, instead of stopping at the edge until you let go.
+  fully on the screen, instead of stopping at the edge until you let go,
+  and can be tucked away again in the same drag.
 - With a long tab list, an empty band no longer sits between the tabs and
   the media cards (room kept for the last tab's glow, now inside the list).
 - The address bar let you type "twitch.tv" but not the "/" after it (the

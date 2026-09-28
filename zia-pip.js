@@ -729,13 +729,27 @@
     lastY = Math.round(y);
   };
 
-  // Out and still held: the window follows the pointer anywhere
+  // Out and still held: the window follows the pointer anywhere, as if it
+  // were being dragged by its video, and can be tucked away again the same
+  // way (past a side or flicked at one when let go)
   const moveFree = (event) => {
     const x = Math.round(dragFrom.windowX + event.screenX - dragFrom.x);
     const y = Math.round(dragFrom.windowY + event.screenY - dragFrom.y);
     window.moveTo(x, y);
     lastX = x;
     lastY = y;
+    const now = Date.now();
+    if (now - movedAt > 300) {
+      trail = [];
+    }
+    movedAt = now;
+    trail.push([now, x, y]);
+    if (trail.length > 20) {
+      trail.shift();
+    }
+    const past = pastSide();
+    root.toggleAttribute("zia-leaving", past > 0);
+    veil(past);
   };
 
   sliver.addEventListener("mouseenter", () => nudge(true));
@@ -800,7 +814,17 @@
       sliver.releasePointerCapture(event.pointerId);
     }
     if (mode === "free") {
-      // Already out, and stays where it was dropped
+      // Let go: tucked if it was taken past a side or flicked at one,
+      // otherwise it stays where it was dropped
+      const name = thrownTo();
+      trail = [];
+      if (name) {
+        veil(1);
+        tuck(name);
+      } else {
+        veil(0);
+      }
+      setTimeout(() => root.removeAttribute("zia-leaving"), 120);
     } else if (mode === "out") {
       // Pulled out: it stays out, sliding the rest of the way onto the screen
       slideOut(200);
