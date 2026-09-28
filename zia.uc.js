@@ -1687,78 +1687,63 @@
   }
 
   // Zen opens a folder by sliding everything in it down from under its
-  // name (a margin on its start that it animates, clipped by the folder).
-  // As in Dia, the tabs stay where they sit instead: the folder opens over
-  // them and the rows below move, and closing, they fade out in place. Each
-  // frame they're moved back by exactly the margin the start has then,
-  // however Zen happens to be animating it.
-  const FOLDER_HOLD_MAX_MS = 1200;
-
-  function holdFolderContents(event) {
-    const group = event.target;
-    if (!isFolder(group) || group.hasAttribute("has-active")) {
+  // name (a margin on its start, clipped by the folder). As in Dia, the
+  // tabs stay where they sit instead: the folder opens over them and the
+  // rows below move, and closing, they fade out in place. They're moved
+  // back by exactly the margin: the same steps, run on the folder as a
+  // variable its tabs' position reads (06), started with the margin's own
+  // animation so the two never drift a frame apart.
+  function holdFolderContents(start, marginFrames, closing, animate) {
+    const container = start.parentElement;
+    if (!container?.classList?.contains("tab-group-container")) {
       return;
     }
-    const container = group.groupContainer || group.querySelector(":scope > .tab-group-container");
-    const start = container?.querySelector(":scope > .zen-tab-group-start");
-    if (!start) {
-      return;
-    }
-    try {
-      if (!Services.prefs.getBoolPref("zia.folders.bounce", true)) {
-        return;
-      }
-    } catch (err) {
-      return;
-    }
-    const closing = event.type === "TabGroupCollapse";
     const token = {};
-    group.ziaHold?.stop?.();
-    group.ziaHold = token;
+    container.ziaHold?.stop?.();
+    container.ziaHold = token;
+    const hold = marginFrames.map((frame) => {
+      const step = { offset: frame.offset, "--zia-hold-y": `${-(parseFloat(frame.marginTop) || 0)}px` };
+      if (frame.easing) {
+        step.easing = frame.easing;
+      }
+      return step;
+    });
     const items = [...container.children].filter((child) => child !== start);
     const fades = closing
       ? items.map((item) =>
-          item.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 220, easing: "ease-in", fill: "forwards" })
+          animate.call(item, [{ opacity: 1 }, { opacity: 0 }], { duration: 220, easing: "ease-in", fill: "forwards" })
         )
       : [];
-    // (straight away, not a frame later: the tabs never show where Zen's
-    // slide starts them)
-    container.style.setProperty("--zia-hold-y", `${-(parseFloat(getComputedStyle(start).marginTop) || 0)}px`);
+    const holding = animate.call(container, hold, { duration: FOLDER_SPRING_MS, fill: "forwards" });
     container.setAttribute("zia-folder-holding", "true");
-    const began = performance.now();
-    let last = null;
-    let still = 0;
-    let frame = 0;
     const stop = () => {
-      cancelAnimationFrame(frame);
+      if (container.ziaHold !== token) {
+        return;
+      }
+      container.ziaHold = null;
       container.removeAttribute("zia-folder-holding");
-      container.style.removeProperty("--zia-hold-y");
+      holding.cancel();
       for (const fade of fades) {
         fade.cancel();
       }
-      if (group.ziaHold === token) {
-        group.ziaHold = null;
-      }
     };
     token.stop = stop;
-    const step = (now) => {
-      const margin = parseFloat(getComputedStyle(start).marginTop) || 0;
-      container.style.setProperty("--zia-hold-y", `${-margin}px`);
-      still = margin === last ? still + 1 : 0;
-      last = margin;
-      const settled = now - began > 150 && still >= 8;
-      if (settled || now - began > FOLDER_HOLD_MAX_MS) {
-        // closing, the faded tabs stay faded until the folder hides them
-        if (closing && !container.hidden && now - began < FOLDER_HOLD_MAX_MS) {
-          frame = requestAnimationFrame(step);
-          return;
-        }
+    holding.finished.then(() => {
+      // closing, the faded tabs stay as they are until the folder hides them
+      if (!closing) {
         stop();
         return;
       }
-      frame = requestAnimationFrame(step);
-    };
-    frame = requestAnimationFrame(step);
+      const began = performance.now();
+      const wait = () => {
+        if (container.hidden || performance.now() - began > 400) {
+          stop();
+        } else {
+          requestAnimationFrame(wait);
+        }
+      };
+      wait();
+    }, () => {});
   }
 
   // With a tab selected inside it, Zen leaves the folder's start where it
@@ -1914,21 +1899,19 @@
       if (spring.closing) {
         bounceUpAfterClosing(this.parentElement, animate);
       }
-      return animate.call(this, spring.keyframes, spring.options);
+      const running = animate.call(this, spring.keyframes, spring.options);
+      try {
+        holdFolderContents(this, spring.keyframes, spring.closing, animate);
+      } catch (err) {
+        noteError("folder bounce: hold contents", err);
+      }
+      return running;
     };
     patched.__zia = true;
     Element.prototype.animate = patched;
     window.addEventListener("TabGroupCollapse", noteFolderMotion, true);
     window.addEventListener("TabGroupExpand", noteFolderMotion, true);
-    for (const type of ["TabGroupCollapse", "TabGroupExpand"]) {
-      window.addEventListener(type, (event) => {
-        try {
-          holdFolderContents(event);
-        } catch (err) {
-          noteError("folder bounce: hold contents", err);
-        }
-      }, true);
-    }
+
   }
 
   function hideWwwInUrlbar() {
