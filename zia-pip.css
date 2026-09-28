@@ -200,6 +200,29 @@
   position: static !important;
 }
 
+/* Newer Zen draws Firefox's controls as a floating dark pill, centred by a
+ * shift: with Dia's look it's only a holder, so none of that. (The shift
+ * put the pill, dark, and the play button in it, in the top left corner,
+ * and kept the controls on the right showing.) */
+:root[zia-dia] #controls #controls-bottom {
+  translate: none !important;
+  transform: none !important;
+  inset: auto !important;
+  width: auto !important;
+  height: auto !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: none !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+
+:root[zia-dia] #controls #controls-bottom :is(.start-controls, .end-controls) {
+  display: none !important;
+}
+
 :root[zia-dia] .controls-bottom-lower {
   display: contents !important;
 }

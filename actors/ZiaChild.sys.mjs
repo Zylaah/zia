@@ -59,6 +59,9 @@ export class ZiaChild extends JSWindowActorChild {
   // favicon: the channel's own picture is asked of Kick by the page itself
   // (as Kick's site does), for the channel named in the address.
   async receiveMessage(message) {
+    if (message.name === "Zia:YouTubeAvatar") {
+      return this.#youTubeAvatar();
+    }
     if (message.name !== "Zia:KickAvatar") {
       return null;
     }
@@ -82,6 +85,31 @@ export class ZiaChild extends JSWindowActorChild {
       }
     }
     return null;
+  }
+
+  // The channel's picture under a YouTube video (or beside a Short), for
+  // the music player to show instead of the video's own thumbnail
+  #youTubeAvatar() {
+    const doc = this.document;
+    if (!doc || !/(^|\.)youtube\.com$/.test(this.contentWindow?.location.hostname || "")) {
+      return null;
+    }
+    const img = doc.querySelector(
+      [
+        "ytd-watch-metadata #owner #avatar img",
+        "ytd-video-owner-renderer #avatar img",
+        "#owner #avatar img",
+        "ytd-reel-video-renderer[is-active] #avatar img",
+        "ytd-reel-video-renderer[is-active] yt-decorated-avatar-view-model img",
+        "ytd-reel-video-renderer[is-active] reel-channel-bar-view-model img",
+      ].join(", ")
+    );
+    const src = img?.currentSrc || img?.src || "";
+    if (!/^https:\/\//.test(src)) {
+      return null;
+    }
+    // (a larger size than the page's, as sharp as the card shows it)
+    return src.replace(/=s\d+(-)/, "=s176$1");
   }
 
   didDestroy() {

@@ -760,6 +760,77 @@
     return "";
   }
 
+  // A YouTube video shows its channel's picture rather than the video's
+  // own thumbnail (a setting, on by default), read from the page once per
+  // video. The page may still be putting it up: asked again a few times.
+  const YOUTUBE_AVATAR_PREF = "zia.media.youtube-channel-art";
+  const youTubeAvatars = new Map();
+
+  function youTubeVideo(browser) {
+    try {
+      const uri = browser?.currentURI;
+      if (!/^(www\.|m\.)?youtube\.com$/.test(uri?.host || "")) {
+        return "";
+      }
+      const url = new URL(uri.spec);
+      const id = url.searchParams.get("v") || url.pathname.match(/^\/(?:shorts|live)\/([\w-]+)/)?.[1] || "";
+      return /^[\w-]+$/.test(id) ? id : "";
+    } catch (err) {
+      return "";
+    }
+  }
+
+  function youTubeAvatar(card) {
+    try {
+      if (!Services.prefs.getBoolPref(YOUTUBE_AVATAR_PREF, true)) {
+        return "";
+      }
+    } catch (err) {
+      return "";
+    }
+    const video = youTubeVideo(card.browser);
+    if (!video) {
+      return "";
+    }
+    const known = youTubeAvatars.get(video);
+    if (known?.pic || known?.asking) {
+      return known.pic || "";
+    }
+    const tries = (known?.tries || 0) + 1;
+    if (tries > 6) {
+      return "";
+    }
+    let actor = null;
+    try {
+      actor = card.browser.browsingContext?.currentWindowGlobal?.getActor("Zia");
+    } catch (err) {
+      actor = null;
+    }
+    if (!actor) {
+      return "";
+    }
+    youTubeAvatars.set(video, { asking: true, tries });
+    actor
+      .sendQuery("Zia:YouTubeAvatar", {})
+      .then((pic) => {
+        youTubeAvatars.set(video, { pic: pic || "", tries });
+        if (youTubeVideo(card.browser) !== video) {
+          return;
+        }
+        if (pic) {
+          card.updateIcon();
+        } else {
+          setTimeout(() => {
+            if (youTubeVideo(card.browser) === video) {
+              card.updateIcon();
+            }
+          }, 1500);
+        }
+      })
+      .catch(() => youTubeAvatars.set(video, { tries }));
+    return "";
+  }
+
   function useMediaArtwork() {
     const front = window.gZenMediaController?.frontCard;
     const proto = front && Object.getPrototypeOf(front);
@@ -799,6 +870,7 @@
       } catch (err) {
         noteError("music and sound bars: useMediaArtwork (2)", err);
       }
+      art = youTubeAvatar(this) || art;
       if (!art) {
         art = kickAvatar(this);
       }

@@ -4,6 +4,21 @@ Every release of Zia, newest first. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.71.0] — 2026-09-28
+
+### Added
+
+- The music player shows a YouTube channel's picture instead of the
+  video's thumbnail. On by default; a setting turns it off.
+
+### Fixed
+
+- Picture-in-picture shows the video's site again on newer versions of
+  Zen, which moved the part of Firefox it's read from.
+- Picture-in-picture with Dia's look no longer shows a dark bar and a
+  play button in the top left corner when something else styles
+  Firefox's control bar as a floating pill.
+
 ## [2.70.13] — 2026-09-28
 
 ### Fixed
