@@ -19,7 +19,7 @@
     "type": "checkbox",
     "label": "Music player shows a YouTube channel's picture instead of the video's thumbnail",
     "property": "zia.media.youtube-channel-art",
-    "defaultValue": true
+    "defaultValue": false
   },
   {
     "type": "checkbox",

@@ -3269,7 +3269,7 @@
   }
 
   // A YouTube video shows its channel's picture rather than the video's
-  // own thumbnail (a setting, on by default), read from the page once per
+  // own thumbnail (a setting, off by default), read from the page once per
   // video. The page may still be putting it up: asked again a few times.
   const YOUTUBE_AVATAR_PREF = "zia.media.youtube-channel-art";
   const youTubeAvatars = new Map();
@@ -3290,7 +3290,7 @@
 
   function youTubeAvatar(card) {
     try {
-      if (!Services.prefs.getBoolPref(YOUTUBE_AVATAR_PREF, true)) {
+      if (!Services.prefs.getBoolPref(YOUTUBE_AVATAR_PREF, false)) {
         return "";
       }
     } catch (err) {
