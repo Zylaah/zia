@@ -2154,7 +2154,11 @@
           continue;
         }
         if (oldValue === null || !target.hasAttribute("collapsed")) {
-          unmark(target);
+          // (opening, the names stay while it does: gone at once, the tab
+          // under one jumped up and back down)
+          if (!target.hasAttribute("zia-revealing")) {
+            unmark(target);
+          }
           continue;
         }
         target.setAttribute("zia-was-active", "true");
@@ -2175,7 +2179,12 @@
         if (isFolder(folder) && folder.hasAttribute("has-active")) {
           folder.setAttribute("zia-revealing", "true");
           clearTimeout(folder.ziaRevealTimer);
-          folder.ziaRevealTimer = setTimeout(() => folder.removeAttribute("zia-revealing"), 500);
+          folder.ziaRevealTimer = setTimeout(() => {
+            folder.removeAttribute("zia-revealing");
+            if (!folder.hasAttribute("has-active")) {
+              unmark(folder);
+            }
+          }, 500);
         }
       },
       true

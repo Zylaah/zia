@@ -672,7 +672,8 @@ zen-workspace[zia-keep-folder-names] .tab-group-container > :is(.tabbrowser-tab[
    selected) keeps its name, with the tab under it, as it would be
    open. Zen hides the name and pulls the tab out to the closed folder's
    edge, which left the inner folder's box round the lone tab. */
-:root:not(#zia-none) zen-folder[collapsed]:is([has-active], [zia-was-active]) :is(zen-folder, tab-group:not([split-view-group])):is(:has(.tabbrowser-tab:is([selected], [folder-active="true"])), [zia-keeps-name]) > .tab-group-label-container {
+:root:not(#zia-none) zen-folder[collapsed]:is([has-active], [zia-was-active]) :is(zen-folder, tab-group:not([split-view-group])):is(:has(.tabbrowser-tab:is([selected], [folder-active="true"])), [zia-keeps-name]) > .tab-group-label-container,
+:root:not(#zia-none) zen-folder[zia-revealing] [zia-keeps-name] > .tab-group-label-container {
   height: calc(var(--tab-margin-block) * 2 + var(--tab-min-height)) !important;
   opacity: 1 !important;
   visibility: visible !important;
