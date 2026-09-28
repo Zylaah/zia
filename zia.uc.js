@@ -2110,8 +2110,17 @@
     window.addEventListener(
       "TabGroupExpand",
       (event) => {
-        if (event.target?.hasAttribute?.("zia-was-active")) {
-          clear(event.target);
+        const folder = event.target;
+        if (folder?.hasAttribute?.("zia-was-active")) {
+          clear(folder);
+        }
+        // Opening a folder that showed just its open tab, its other tabs
+        // fade in as Zen grows them back (at once, a strip of each showed
+        // as they grew)
+        if (isFolder(folder) && folder.hasAttribute("has-active")) {
+          folder.setAttribute("zia-revealing", "true");
+          clearTimeout(folder.ziaRevealTimer);
+          folder.ziaRevealTimer = setTimeout(() => folder.removeAttribute("zia-revealing"), 500);
         }
       },
       true
@@ -2148,9 +2157,22 @@
         }
         event.stopPropagation();
         event.preventDefault();
-        for (const el of [...outer, folder]) {
+        // One at a time, outermost first: asked to open while the folder
+        // round it was still opening, Zen let it be
+        const openNext = (list) => {
+          const el = list.shift();
+          if (!el) {
+            return;
+          }
           el.collapsed = false;
-        }
+          requestAnimationFrame(() => {
+            const moving = [el.groupStartElement, el.groupContainer]
+              .filter(Boolean)
+              .flatMap((node) => node.getAnimations());
+            Promise.all(moving.map((a) => a.finished.catch(() => {}))).then(() => openNext(list));
+          });
+        };
+        openNext([...outer, folder]);
       },
       true
     );
