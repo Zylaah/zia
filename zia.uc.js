@@ -1655,13 +1655,17 @@
     // 0 to 0", closing short of shut), so which way it's going comes from
     // the folder, and the ends from where open (0) and shut really are
     const folder = element.parentElement.parentElement;
+    // With a tab selected inside, Zen shows just that tab (picked from the
+    // closed folder's list, say, the folder stays "collapsed" while Zen
+    // opens it round the tab), and the other tabs' own animations carry the
+    // motion (springFolderItem): Zen's, as it was
+    if (folder.hasAttribute("has-active") || folder.contains(gBrowser.selectedTab)) {
+      element.parentElement.ziaHold?.();
+      return null;
+    }
     const closing = folder.hasAttribute("collapsed");
     const zenFrom = parseFloat(keyframes[0]?.marginTop);
     const zenTo = parseFloat(keyframes[1]?.marginTop);
-    // (with a tab selected inside, the start stays put: springFolderItem)
-    if (zenFrom === zenTo && folder.hasAttribute("has-active")) {
-      return null;
-    }
     const shut = -Math.max(
       1,
       element.parentElement.getBoundingClientRect().height,

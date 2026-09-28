@@ -10,6 +10,10 @@ Every release of Zia, newest first. The format follows
 
 - A Kick stream in the music player shows the streamer's picture, as Twitch
   does, instead of Kick's icon.
+- Picking a tab from a closed folder's list no longer pops the folder open
+  empty and shrinks it back (2.70.5).
+- An empty folder inside a closed folder, with a tab selected in the outer
+  one, no longer leaves its "Drag tabs here" box showing.
 
 ## [2.70.6] — 2026-09-28
 
