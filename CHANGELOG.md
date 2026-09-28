@@ -4,6 +4,13 @@ Every release of Zia, newest first. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.69.2] — 2026-09-28
+
+### Fixed
+
+- A collapsed space no longer shows a thin bright line above the folder it
+  keeps (the squashed edges of the coloured folders it hides).
+
 ## [2.69.1] — 2026-09-28
 
 ### Changed
