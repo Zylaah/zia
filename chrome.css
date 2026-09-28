@@ -2090,10 +2090,16 @@ zen-folder > .tab-group-label-container > .zia-folder-close:hover {
    folder's name stays (and any folder it's in), so the tab isn't left
    floating on its own. */
 zen-workspace[collapsedpinnedtabs] :is(zen-folder, tab-group:not([split-view-group])):has(.tabbrowser-tab[selected]) > .tab-group-label-container {
-  height: auto !important;
-  min-height: revert !important;
+  /* (Zen's own height for it, which its collapse animates to nothing) */
+  height: calc(var(--tab-margin-block) * 2 + var(--tab-min-height)) !important;
   opacity: 1 !important;
   visibility: visible !important;
+}
+
+/* ...and the tab keeps its place under it: Zen pulls it out to the edge
+   when the space collapses, as it would be with its folder hidden */
+zen-workspace[collapsedpinnedtabs] .tab-group-container > :is(.tabbrowser-tab[selected], tab-group[split-view-group]:has(.tabbrowser-tab[selected])) {
+  --zen-folder-indent: 14px !important;
 }
 #zia-tab-card,
 #zia-folder-card {
