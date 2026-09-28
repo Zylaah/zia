@@ -2587,14 +2587,11 @@ zen-folder > .tab-group-label-container > .zia-folder-close:hover {
 }
 
 /* Room at the end of the tab list for the last tab's glow, which the list
-   would otherwise cut off */
-:is(.workspace-arrowscrollbox, #tabbrowser-tabs, #tabbrowser-arrowscrollbox) {
-  padding-bottom: calc(var(--zia-active-glow-blur) + var(--zia-active-glow-spread) + var(--zia-active-glow-reach)) !important;
-}
-
-/* ...but the list's inner scroll box ends where the last row does and cuts
-   off anything past it, and it doesn't take padding of its own: the room
-   goes at the end of the tabs inside it, so it grows by that much */
+   would otherwise cut off. The list's inner scroll box ends where the last
+   row does and doesn't take padding of its own, so the room goes at the end
+   of the tabs inside it, and scrolls with them. (It used to be padding on
+   the list itself too, which sat outside the scrolling: with a long list it
+   showed as an empty band above the media cards.) */
 .zen-workspace-normal-tabs-section {
   padding-bottom: calc(var(--zia-active-glow-blur) + var(--zia-active-glow-spread) + var(--zia-active-glow-reach)) !important;
 }

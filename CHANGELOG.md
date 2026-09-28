@@ -24,6 +24,8 @@ Every release of Zia, newest first. The format follows
 
 - Picture-in-picture: pulling a tucked window out keeps going once it's
   fully on the screen, instead of stopping at the edge until you let go.
+- With a long tab list, an empty band no longer sits between the tabs and
+  the media cards (room kept for the last tab's glow, now inside the list).
 - The address bar let you type "twitch.tv" but not the "/" after it (the
   autofilled slash that Zia hides took the typed one with it).
 
