@@ -4,6 +4,13 @@ Every release of Zia, newest first. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Fixed
+
+- Picture-in-picture shows the video's site again on newer versions of
+  Zen, which moved the part of Firefox it's read from.
+
 ## [2.70.13] — 2026-09-28
 
 ### Fixed

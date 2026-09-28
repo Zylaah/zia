@@ -52,7 +52,17 @@
   const host = make("div", "zia-pip-host control-item", topBar);
   let sourceBrowser = null;
   try {
-    const { PictureInPicture } = ChromeUtils.importESModule("resource://gre/modules/PictureInPicture.sys.mjs");
+    // (newer Firefox moved it)
+    let PictureInPicture = null;
+    for (const url of [
+      "moz-src:///toolkit/components/pictureinpicture/PictureInPicture.sys.mjs",
+      "resource://gre/modules/PictureInPicture.sys.mjs",
+    ]) {
+      try {
+        ({ PictureInPicture } = ChromeUtils.importESModule(url));
+        break;
+      } catch (err) {}
+    }
     sourceBrowser = PictureInPicture.weakWinToBrowser?.get(window) || null;
     host.textContent = sourceBrowser?.currentURI?.host || "";
   } catch (err) {
