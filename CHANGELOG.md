@@ -4,6 +4,24 @@ Every release of Zia, newest first. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.70.7] — 2026-09-28
+
+### Fixed
+
+- A Kick stream in the music player shows the streamer's picture, as Twitch
+  does, instead of Kick's icon.
+- Picking a tab from a closed folder's list no longer pops the folder open
+  empty and shrinks it back (2.70.5).
+- An empty folder inside a closed folder, with a tab selected in the outer
+  one, no longer leaves its "Drag tabs here" box showing.
+- A closed folder showing a selected tab that sits in a folder inside it
+  keeps that inner folder's name above the tab, as it is open, instead of
+  a bare box round the tab.
+- Unloading a closed folder showing its selected tab, its tabs no longer
+  flash up piled on one row as it shuts.
+- When the front music player goes away, the one behind shows as it moves
+  up, instead of an almost empty card for a moment.
+
 ## [2.70.6] — 2026-09-28
 
 ### Fixed

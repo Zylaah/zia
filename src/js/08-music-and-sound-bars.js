@@ -711,6 +711,55 @@
     return true;
   }
 
+  // Kick gives its streams no artwork: the card shows the channel's own
+  // picture instead, asked of Kick by the page (actors/ZiaChild.sys.mjs),
+  // once per channel.
+  const kickAvatars = new Map();
+
+  function kickSlug(browser) {
+    try {
+      const uri = browser?.currentURI;
+      if (!/^(www\.)?kick\.com$/.test(uri?.host || "")) {
+        return "";
+      }
+      const slug = uri.filePath.split("/")[1] || "";
+      return /^[\w-]+$/.test(slug) ? slug.toLowerCase() : "";
+    } catch (err) {
+      return "";
+    }
+  }
+
+  function kickAvatar(card) {
+    const slug = kickSlug(card.browser);
+    if (!slug) {
+      return "";
+    }
+    if (kickAvatars.has(slug)) {
+      return kickAvatars.get(slug) || "";
+    }
+    kickAvatars.set(slug, null);
+    let actor = null;
+    try {
+      actor = card.browser.browsingContext?.currentWindowGlobal?.getActor("Zia");
+    } catch (err) {
+      actor = null;
+    }
+    if (!actor) {
+      kickAvatars.delete(slug);
+      return "";
+    }
+    actor
+      .sendQuery("Zia:KickAvatar", { slug })
+      .then((pic) => {
+        kickAvatars.set(slug, pic || "");
+        if (pic && kickSlug(card.browser) === slug) {
+          card.updateIcon();
+        }
+      })
+      .catch(() => kickAvatars.delete(slug));
+    return "";
+  }
+
   function useMediaArtwork() {
     const front = window.gZenMediaController?.frontCard;
     const proto = front && Object.getPrototypeOf(front);
@@ -749,6 +798,9 @@
         art = bestArtwork(this.controller?.getMetadata?.()?.artwork);
       } catch (err) {
         noteError("music and sound bars: useMediaArtwork (2)", err);
+      }
+      if (!art) {
+        art = kickAvatar(this);
       }
       if (!button) {
         return;

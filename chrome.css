@@ -1281,6 +1281,13 @@ zen-folder[collapsed][has-active] .tabbrowser-tab:not([selected], [visuallyselec
   opacity: 0 !important;
 }
 
+/* Unloaded (the selection moves out), its tabs stay see-through while Zen
+   shuts it, the one that was showing fading (zia.uc.js) */
+zen-folder[collapsed][zia-was-active] .tabbrowser-tab {
+  opacity: 0 !important;
+  transition: opacity 0.15s ease-in !important;
+}
+
 /* That margin lets the active tab's glow show, but it also left the
    folder's hidden tabs reachable just below it: hovering there brought up
    the last tab's card and a click opened it. Only the tabs a collapsed
@@ -2073,7 +2080,10 @@ zen-folder > .tab-group-label-container > .zia-folder-close:hover {
     }
   }
 
-  &[collapsed] > .tab-group-container::after {
+  /* (a folder inside a closed folder keeps it hidden too: with a tab
+     selected in the outer folder, Zen shows that tab alone) */
+  &[collapsed] > .tab-group-container::after,
+  :is(zen-folder, tab-group:not([split-view-group]))[collapsed] & > .tab-group-container::after {
     height: 0;
     margin-block: 0;
     border-width: 0;
@@ -2151,6 +2161,20 @@ zen-workspace[zia-keep-folder-names] :is(zen-folder, tab-group:not([split-view-g
 /* ...and the tab keeps its place under it: Zen pulls it out to the edge
    when the space collapses, as it would be with its folder hidden */
 zen-workspace[zia-keep-folder-names] .tab-group-container > :is(.tabbrowser-tab[selected], tab-group[split-view-group]:has(.tabbrowser-tab[selected])) {
+  --zen-folder-indent: 14px !important;
+}
+
+/* The same inside a closed folder showing its selected tab: a folder in it
+   holding that tab keeps its name, with the tab under it, as it would be
+   open. Zen hides the name and pulls the tab out to the closed folder's
+   edge, which left the inner folder's box round the lone tab. */
+zen-folder[collapsed][has-active] :is(zen-folder, tab-group:not([split-view-group])):has(.tabbrowser-tab[selected]) > .tab-group-label-container {
+  height: calc(var(--tab-margin-block) * 2 + var(--tab-min-height)) !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+zen-folder[collapsed][has-active] :is(zen-folder, tab-group:not([split-view-group])) > .tab-group-container > :is(.tabbrowser-tab[selected], tab-group[split-view-group]:has(.tabbrowser-tab[selected])) {
   --zen-folder-indent: 14px !important;
 }
 
@@ -3236,7 +3260,9 @@ zen-workspace arrowscrollbox::part(scrollbox) {
   transition: opacity 0.2s var(--zia-media-ease) !important;
 }
 
-#zen-media-controls-toolbar:not(:hover):has(.zen-media-card[stacked-behind]) .zen-media-card[stacked-behind] {
+/* (not while the front card fades away, when the one behind is about to
+   take its place: it showed as an almost empty card until it did) */
+#zen-media-controls-toolbar:not(:hover):has(.zen-media-card[stacked-behind]):not(:has(.zen-media-card:not([stacked-behind]):is([zen-hiding], [zen-removing]))) .zen-media-card[stacked-behind] {
   mask: linear-gradient(
     #000 0 calc(var(--zen-media-stack-peek, 8px) * var(--zen-media-card-peek-level, 1) / (1 - 0.04 * var(--zen-media-card-peek-level, 1))),
     transparent 0

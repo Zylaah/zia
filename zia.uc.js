@@ -1655,13 +1655,17 @@
     // 0 to 0", closing short of shut), so which way it's going comes from
     // the folder, and the ends from where open (0) and shut really are
     const folder = element.parentElement.parentElement;
+    // With a tab selected inside, Zen shows just that tab (picked from the
+    // closed folder's list, say, the folder stays "collapsed" while Zen
+    // opens it round the tab), and the other tabs' own animations carry the
+    // motion (springFolderItem): Zen's, as it was
+    if (folder.hasAttribute("has-active") || folder.contains(gBrowser.selectedTab)) {
+      element.parentElement.ziaHold?.();
+      return null;
+    }
     const closing = folder.hasAttribute("collapsed");
     const zenFrom = parseFloat(keyframes[0]?.marginTop);
     const zenTo = parseFloat(keyframes[1]?.marginTop);
-    // (with a tab selected inside, the start stays put: springFolderItem)
-    if (zenFrom === zenTo && folder.hasAttribute("has-active")) {
-      return null;
-    }
     const shut = -Math.max(
       1,
       element.parentElement.getBoundingClientRect().height,
@@ -2049,6 +2053,41 @@
   // (06-folders-and-sidebar.css), marked from when it collapses until it
   // has finished opening again.
   const SPACE_OPEN_MS = 700;
+
+  // A closed folder showing its selected tab keeps its other tabs see-
+  // through (chrome.css). Unloading the folder moves the selection out, and
+  // the moment it did, all its tabs showed piled on one row while Zen shut
+  // it. They stay see-through (the one that was showing fades) until Zen
+  // has, or the folder opens.
+  function keepTabsHiddenAfterActiveLeaves() {
+    const tabs = gBrowser.tabContainer;
+    if (!tabs) {
+      return;
+    }
+    const clear = (folder) => {
+      clearTimeout(folder.ziaWasActiveTimer);
+      folder.removeAttribute("zia-was-active");
+    };
+    new MutationObserver((records) => {
+      for (const { target, oldValue } of records) {
+        if (!isFolder(target) || oldValue === null || target.hasAttribute("has-active") || !target.hasAttribute("collapsed")) {
+          continue;
+        }
+        target.setAttribute("zia-was-active", "true");
+        clearTimeout(target.ziaWasActiveTimer);
+        target.ziaWasActiveTimer = setTimeout(() => clear(target), 700);
+      }
+    }).observe(tabs, { subtree: true, attributes: true, attributeFilter: ["has-active"], attributeOldValue: true });
+    window.addEventListener(
+      "TabGroupExpand",
+      (event) => {
+        if (event.target?.hasAttribute?.("zia-was-active")) {
+          clear(event.target);
+        }
+      },
+      true
+    );
+  }
 
   function keepFolderNamesInCollapsedSpaces() {
     const timers = new WeakMap();
@@ -3001,6 +3040,55 @@
     return true;
   }
 
+  // Kick gives its streams no artwork: the card shows the channel's own
+  // picture instead, asked of Kick by the page (actors/ZiaChild.sys.mjs),
+  // once per channel.
+  const kickAvatars = new Map();
+
+  function kickSlug(browser) {
+    try {
+      const uri = browser?.currentURI;
+      if (!/^(www\.)?kick\.com$/.test(uri?.host || "")) {
+        return "";
+      }
+      const slug = uri.filePath.split("/")[1] || "";
+      return /^[\w-]+$/.test(slug) ? slug.toLowerCase() : "";
+    } catch (err) {
+      return "";
+    }
+  }
+
+  function kickAvatar(card) {
+    const slug = kickSlug(card.browser);
+    if (!slug) {
+      return "";
+    }
+    if (kickAvatars.has(slug)) {
+      return kickAvatars.get(slug) || "";
+    }
+    kickAvatars.set(slug, null);
+    let actor = null;
+    try {
+      actor = card.browser.browsingContext?.currentWindowGlobal?.getActor("Zia");
+    } catch (err) {
+      actor = null;
+    }
+    if (!actor) {
+      kickAvatars.delete(slug);
+      return "";
+    }
+    actor
+      .sendQuery("Zia:KickAvatar", { slug })
+      .then((pic) => {
+        kickAvatars.set(slug, pic || "");
+        if (pic && kickSlug(card.browser) === slug) {
+          card.updateIcon();
+        }
+      })
+      .catch(() => kickAvatars.delete(slug));
+    return "";
+  }
+
   function useMediaArtwork() {
     const front = window.gZenMediaController?.frontCard;
     const proto = front && Object.getPrototypeOf(front);
@@ -3039,6 +3127,9 @@
         art = bestArtwork(this.controller?.getMetadata?.()?.artwork);
       } catch (err) {
         noteError("music and sound bars: useMediaArtwork (2)", err);
+      }
+      if (!art) {
+        art = kickAvatar(this);
       }
       if (!button) {
         return;
@@ -12403,6 +12494,7 @@
     safely("moveTabsLikeDia", moveTabsLikeDia);
     safely("addFolderBounce", addFolderBounce);
     safely("keepFolderNamesInCollapsedSpaces", keepFolderNamesInCollapsedSpaces);
+    safely("keepTabsHiddenAfterActiveLeaves", keepTabsHiddenAfterActiveLeaves);
     safely("allowEmojiFolderIcons", allowEmojiFolderIcons);
     safely("hideWwwInUrlbar", hideWwwInUrlbar);
     safely("watchRightEdges", watchRightEdges);
