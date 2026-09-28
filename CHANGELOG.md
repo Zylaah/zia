@@ -4,6 +4,18 @@ Every release of Zia, newest first. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.70.5] — 2026-09-28
+
+### Fixed
+
+- Opening a folder again while it's still closing, it grows back smoothly
+  from where it had got to instead of snapping open.
+- Clicking a folder open and shut quickly, it no longer sometimes snaps or
+  slides its tabs up: Zia now reads which way the folder is going from the
+  folder itself, since Zen's own start and end points go stale mid-way.
+- An empty folder's "Drag tabs here" box stays put while the folder opens
+  and closes, fading out like the tabs do, instead of shrinking and sliding.
+
 ## [2.70.4] — 2026-09-28
 
 ### Fixed
