@@ -5289,6 +5289,35 @@
     data.addView(view);
   }
 
+
+  // With the downloads button hidden until there's a download (Firefox's
+  // "auto-hide"), the first download's arc flew to the corner and dropped
+  // a square there: Zen looks for the button before Firefox has shown it.
+  // The button is shown first, and the arc waits a frame for it to land.
+  function flyFirstDownloadToButton() {
+    customElements.whenDefined("zen-download-animation").then(() => {
+      const proto = customElements.get("zen-download-animation")?.prototype;
+      const original = proto?.initializeAnimation;
+      if (typeof original !== "function" || original.__zia) {
+        return;
+      }
+      const patched = async function (...args) {
+        const button = document.getElementById("downloads-button");
+        if (button?.hidden) {
+          try {
+            window.DownloadsButton?.unhide?.();
+          } catch (err) {
+            noteError("downloads: unhide", err);
+          }
+          button.hidden = false;
+          await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+        }
+        return original.apply(this, args);
+      };
+      patched.__zia = true;
+      proto.initializeAnimation = patched;
+    }, () => {});
+  }
   // Zia's icons are Tabler Icons (made by scripts/tabler-icons.py), each in
   // an outline and, for about a thousand of them, a solid style. The search
   // index holds every icon's name, tags and category, so "money" finds cash,
@@ -12394,6 +12423,7 @@
     safely("createTitleElement", createTitleElement);
     safely("watchTitleOnly", watchTitleOnly);
     safely("addDownloadProgress", addDownloadProgress);
+    safely("flyFirstDownloadToButton", flyFirstDownloadToButton);
     ifOn("icon-picker", "addIconPicker", addIconPicker);
     safely("watchCompactTopRow", watchCompactTopRow);
     safely("watchOldIcons", watchOldIcons);

@@ -79,3 +79,32 @@
     data.addView(view);
   }
 
+
+  // With the downloads button hidden until there's a download (Firefox's
+  // "auto-hide"), the first download's arc flew to the corner and dropped
+  // a square there: Zen looks for the button before Firefox has shown it.
+  // The button is shown first, and the arc waits a frame for it to land.
+  function flyFirstDownloadToButton() {
+    customElements.whenDefined("zen-download-animation").then(() => {
+      const proto = customElements.get("zen-download-animation")?.prototype;
+      const original = proto?.initializeAnimation;
+      if (typeof original !== "function" || original.__zia) {
+        return;
+      }
+      const patched = async function (...args) {
+        const button = document.getElementById("downloads-button");
+        if (button?.hidden) {
+          try {
+            window.DownloadsButton?.unhide?.();
+          } catch (err) {
+            noteError("downloads: unhide", err);
+          }
+          button.hidden = false;
+          await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+        }
+        return original.apply(this, args);
+      };
+      patched.__zia = true;
+      proto.initializeAnimation = patched;
+    }, () => {});
+  }

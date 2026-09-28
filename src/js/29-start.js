@@ -269,6 +269,7 @@
     safely("createTitleElement", createTitleElement);
     safely("watchTitleOnly", watchTitleOnly);
     safely("addDownloadProgress", addDownloadProgress);
+    safely("flyFirstDownloadToButton", flyFirstDownloadToButton);
     ifOn("icon-picker", "addIconPicker", addIconPicker);
     safely("watchCompactTopRow", watchCompactTopRow);
     safely("watchOldIcons", watchOldIcons);
