@@ -372,6 +372,12 @@
   padding-top: 2px !important;
 }
 
+/* A music card there sits flush at the top of that room, where the icons
+   have a little of their own above their glyphs: it gets the same */
+#zen-media-controls-toolbar:not([hidden]) {
+  margin-top: 2px !important;
+}
+
 :root[zen-sidebar-expanded="true"] zen-folder {
   &[zia-folder-color="green"] { --zia-folder-swatch: var(--zia-fc-green); }
   &[zia-folder-color="blue"] { --zia-folder-swatch: var(--zia-fc-blue); }
