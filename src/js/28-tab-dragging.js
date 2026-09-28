@@ -300,6 +300,11 @@
       const hand = drag.folder
         ? true
         : drag.split ? crosses && !folder : !!folder || !!pf || (!!nf && isFolderStart(next, nf)) || crosses;
+      // A tap on going into a folder, open or closed (Zen's own taps are
+      // muted during a drag). Not for the one it's already in as it starts.
+      if (drag.target && folder && folder !== drag.target.folder) {
+        tap();
+      }
       drag.target = { folder, atEnd, prev, next, below, sameNext: same(next), slotTop, hand };
       setDropSlot(folder);
     };
