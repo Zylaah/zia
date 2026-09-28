@@ -186,6 +186,9 @@
           item.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 220, easing: "ease-in", fill: "forwards" })
         )
       : [];
+    // (straight away, not a frame later: the tabs never show where Zen's
+    // slide starts them)
+    container.style.setProperty("--zia-hold-y", `${-(parseFloat(getComputedStyle(start).marginTop) || 0)}px`);
     container.setAttribute("zia-folder-holding", "true");
     const began = performance.now();
     let last = null;
