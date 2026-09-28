@@ -1651,11 +1651,24 @@
     ) {
       return null;
     }
-    const from = parseFloat(keyframes[0]?.marginTop);
-    const to = parseFloat(keyframes[1]?.marginTop);
-    if (!Number.isFinite(from) || !Number.isFinite(to) || from === to) {
+    // Clicked open and shut quickly, Zen's own ends go stale (opening "from
+    // 0 to 0", closing short of shut), so which way it's going comes from
+    // the folder, and the ends from where open (0) and shut really are
+    const folder = element.parentElement.parentElement;
+    const closing = folder.hasAttribute("collapsed");
+    const zenFrom = parseFloat(keyframes[0]?.marginTop);
+    const zenTo = parseFloat(keyframes[1]?.marginTop);
+    // (with a tab selected inside, the start stays put: springFolderItem)
+    if (zenFrom === zenTo && folder.hasAttribute("has-active")) {
       return null;
     }
+    const shut = -Math.max(
+      1,
+      element.parentElement.getBoundingClientRect().height,
+      ...[closing ? -zenTo : -zenFrom].filter(Number.isFinite)
+    );
+    const from = closing ? 0 : Number.isFinite(zenFrom) && zenFrom < 0 ? zenFrom : shut;
+    const to = closing ? (Number.isFinite(zenTo) && zenTo < 0 ? Math.min(zenTo, shut) : shut) : 0;
     let bounce = true;
     try {
       bounce = Services.prefs.getBoolPref("zia.folders.bounce", true);
@@ -1665,7 +1678,14 @@
     // Spring off: Zen's own timing, but still the folder opening over its
     // tabs (holdFolderContents); the setting is for the bounce only
     if (!bounce) {
-      return { from, to, closing: to < from, plain: true, keyframes, options };
+      return {
+        from,
+        to,
+        closing,
+        plain: true,
+        keyframes: [{ marginTop: `${from}px` }, { marginTop: `${to}px` }],
+        options,
+      };
     }
     // Opening, the margin rises to 0 and goes a little past; closing, it
     // falls and goes a little further, so the rows below rise past their
@@ -1674,7 +1694,7 @@
     return {
       from,
       to,
-      closing: to < from,
+      closing,
       keyframes: pixelSteps("marginTop", [[0, from, EASE_OUT], [0.62, past, EASE_IN_OUT], [1, to]], FOLDER_SPRING_MS, to),
       options: { ...options, duration: FOLDER_SPRING_MS, easing: "linear" },
     };
@@ -1710,17 +1730,18 @@
       return null;
     }
     const { from, to, closing } = spring;
-    // Turned round part way (clicked again before it finished), it goes
-    // on from the height it's at, measured before the last one's stopped
-    const turning = !!container.ziaHold;
-    const shown = container.getBoundingClientRect().height;
+    // It goes from the height it's at (turned round part way, clicked
+    // again before it finished, measured before the last one's stopped)
+    const fromHeight = container.getBoundingClientRect().height;
     container.ziaHold?.();
-    // the folder's height with the margin at each end
+    // to the folder's height open or shut
     const saved = start.style.marginTop;
-    start.style.marginTop = `${from}px`;
-    const fromHeight = turning ? shown : container.getBoundingClientRect().height;
-    start.style.marginTop = `${to}px`;
-    const toHeight = container.getBoundingClientRect().height;
+    start.style.marginTop = "0px";
+    let toHeight = container.getBoundingClientRect().height;
+    if (closing) {
+      start.style.marginTop = `${-2 * toHeight - 1}px`;
+      toHeight = container.getBoundingClientRect().height;
+    }
     start.style.marginTop = saved;
     if (!(Math.abs(toHeight - fromHeight) > 0.5)) {
       return null;
