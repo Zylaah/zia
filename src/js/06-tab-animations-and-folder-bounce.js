@@ -239,8 +239,14 @@
       unfade();
     };
     container.ziaHold = stop;
+    // Closing, it's watched for opening again from the start: clicked again
+    // before it finished, the opening needn't come back through here, and
+    // the tabs were left faded out in an open folder
+    if (closing) {
+      window.addEventListener("TabGroupExpand", onOpen, true);
+    }
     growing.finished.then(() => {
-      if (!closing) {
+      if (!closing || !container.parentElement?.hasAttribute("collapsed")) {
         stop();
         return;
       }
@@ -251,7 +257,6 @@
       container.removeAttribute("zia-folder-holding");
       growing.cancel();
       gBrowser.tabContainer.addEventListener("TabSelect", onSelect);
-      window.addEventListener("TabGroupExpand", onOpen, true);
     }, () => {});
     return margin;
   }
