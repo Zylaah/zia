@@ -4,6 +4,13 @@ Every release of Zia, newest first. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Fixed
+
+- Opening a folder again while it's still closing, it grows back smoothly
+  from where it had got to instead of snapping open.
+
 ## [2.70.4] — 2026-09-28
 
 ### Fixed

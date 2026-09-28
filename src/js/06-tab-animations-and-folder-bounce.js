@@ -215,9 +215,38 @@
     };
     // (however it's opened: not every opening comes through here)
     const onOpen = (event) => {
-      if (event.target === container.parentElement) {
-        stop();
+      if (event.target !== container.parentElement) {
+        return;
       }
+      // Opened again part way through closing: the folder grows back from
+      // where it had got to, rather than snapping open (Zen doesn't animate
+      // it then, as its margin never got as far as closed)
+      const midway = growing.playState === "running";
+      const shown = container.getBoundingClientRect().height;
+      stop();
+      if (!midway) {
+        return;
+      }
+      requestAnimationFrame(() => {
+        if (container.ziaHold || !container.isConnected) {
+          return;
+        }
+        const full = container.getBoundingClientRect().height;
+        if (Math.abs(full - shown) < 1) {
+          return;
+        }
+        container.setAttribute("zia-folder-holding", "true");
+        const back = animate.call(container, [{ height: `${shown}px` }, { height: `${full}px` }], {
+          duration: FOLDER_SPRING_MS,
+          easing: "cubic-bezier(0.25, 1, 0.5, 1)",
+        });
+        const done = () => {
+          if (!container.ziaHold) {
+            container.removeAttribute("zia-folder-holding");
+          }
+        };
+        back.finished.then(done, done);
+      });
     };
     // A tab selected inside the closed folder is shown by Zen: it can't
     // stay faded out
