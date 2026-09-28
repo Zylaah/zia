@@ -10,6 +10,9 @@ Every release of Zia, newest first. The format follows
 
 - Picture-in-picture shows the video's site again on newer versions of
   Zen, which moved the part of Firefox it's read from.
+- Picture-in-picture with Dia's look no longer shows a dark bar and a
+  play button in the top left corner when something else styles
+  Firefox's control bar as a floating pill.
 
 ## [2.70.13] — 2026-09-28
 
