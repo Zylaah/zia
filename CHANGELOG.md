@@ -4,6 +4,14 @@ Every release of Zia, newest first. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Fixed
+
+- Opening a closed folder showing a tab from a folder inside it, the
+  inner folder's name stays put as it opens, instead of going at once so
+  the tab jumped up and back down.
+
 ## [2.70.10] — 2026-09-28
 
 ### Fixed
