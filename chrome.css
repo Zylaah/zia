@@ -996,12 +996,17 @@
   :root[zen-sidebar-expanded="true"] .zen-essentials-container {
     &,
     &[data-hack-type] {
-      grid-template-columns: repeat(auto-fill, minmax(var(--zia-essential-min-width), 1fr)) !important;
+      /* (auto-fit: a row of fewer essentials than would fit still spans the
+         sidebar, the columns left over folded away, and no column comes and
+         goes under them as the sidebar widens) */
+      grid-template-columns: repeat(auto-fit, minmax(var(--zia-essential-min-width), 1fr)) !important;
     }
 
+    /* (no widest: a full row's columns are never wider than two of the
+       narrowest anyway, and a short row's essentials fill it) */
     & > .tabbrowser-tab[zen-essential] {
       min-width: 0 !important;
-      max-width: var(--zia-essential-max-width) !important;
+      max-width: none !important;
       width: 100% !important;
     }
   }
@@ -1376,6 +1381,11 @@ zen-essentials-promo {
   opacity: 0 !important;
 }
 
+/* ...and out over the list, it gives up its cell: the others close up */
+.tabbrowser-tab[zen-essential][zia-essential-dragged][zia-essential-out] {
+  display: none !important;
+}
+
 :is(#zen-sidebar-splitter, #sidebar-splitter, .zen-sidebar-splitter),
 :is(#zen-sidebar-splitter, #sidebar-splitter, .zen-sidebar-splitter)::before,
 :is(#zen-sidebar-splitter, #sidebar-splitter, .zen-sidebar-splitter)::after {
@@ -1681,11 +1691,19 @@ zen-split-fake-tab {
     rotate: -90deg;
   }
 
-  /* Open, the box stops a tab gap above whatever's below, the same gap as
-   * between two tabs, and the padding inside makes up for it. */
-  &:is(:not([collapsed]), [collapsed]:is([has-active], :has(tab[selected], tab[atg-folder-active]))) {
+  /* The box stops a tab gap above whatever's below, the same gap as
+   * between two tabs, and the padding inside makes up for it. The tabs sit
+   * the inner gap closer to the folder's name (the room under the name was
+   * more than above it), so the padding fits in the height a tab dragged in
+   * is given. Open or closed alike: switched off as a folder closed, its
+   * tabs dropped that gap before closing */
+  &:not(:has(> .tab-group-container[hidden])) {
     --zia-folder-box-bottom: var(--tab-margin-block);
     padding-bottom: var(--zia-folder-inner-gap) !important;
+  }
+
+  & > .tab-group-container:not([hidden]) {
+    margin-top: calc(-1 * var(--zia-folder-inner-gap)) !important;
   }
 
   & :is(zen-folder, tab-group:not([split-view-group])) {
@@ -1693,7 +1711,7 @@ zen-split-fake-tab {
     --zia-folder-box-right: calc(var(--zia-folder-right-fix, 0px) + var(--zia-folder-inner-gap));
     --zia-folder-box-bottom: var(--tab-margin-block);
 
-    &:is(:not([collapsed]), [collapsed]:is([has-active], :has(tab[selected], tab[atg-folder-active]))) {
+    &:not(:has(> .tab-group-container[hidden])) {
       padding-bottom: var(--zia-folder-inner-gap) !important;
     }
   }
@@ -1767,6 +1785,18 @@ zen-split-fake-tab {
 
 :root[zen-sidebar-expanded="true"] :is(zen-folder, tab-group:not([split-view-group]))[zia-drop-slot]::after {
   opacity: 1 !important;
+}
+
+/* The folder a tab was dragged out of isn't highlighted, though Firefox
+   keeps it hovered until the mouse next moves (tab dragging) */
+:root[zen-sidebar-expanded="true"]:not(#zia-none) :is(zen-folder, tab-group:not([split-view-group]))[zia-left]:not([zia-drop-slot]) {
+  &::before {
+    background-color: transparent !important;
+  }
+
+  &::after {
+    opacity: 0 !important;
+  }
 }
 
 :root #tabbrowser-tabs:is([zia-settling], [movingtab]) .tabbrowser-tab[zia-drag-away],
@@ -2304,13 +2334,11 @@ zen-workspace[collapsedpinnedtabs] :is(zen-folder, tab-group:not([split-view-gro
   opacity: 0 !important;
 }
 
-/* A closed folder whose one showing tab is being dragged out of it is drawn
-   at its closed height, not with the room it keeps below its name for that
-   tab's glow (zia.uc.js) */
-:root[zen-sidebar-expanded="true"] zen-folder[collapsed][zia-lent]::before,
-:root[zen-sidebar-expanded="true"] zen-folder[collapsed][zia-lent]::after {
-  bottom: var(--zia-lent-inset) !important;
-  transition: bottom 120ms ease-out !important;
+/* A folder whose tab was just dragged out, held while it eases shut: its
+   box keeps its bottom where it was (zia.uc.js) */
+:root[zen-sidebar-expanded="true"] zen-folder[zia-holding]::before,
+:root[zen-sidebar-expanded="true"] zen-folder[zia-holding]::after {
+  bottom: var(--zia-hold-inset) !important;
 }
 #zia-tab-card,
 #zia-folder-card {

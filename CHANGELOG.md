@@ -4,6 +4,33 @@ Every release of Zia, newest first. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.72.8] — 2026-09-29
+
+### Fixed
+
+- Folders: a closed folder showing its open tab keeps its padding below the
+  tab again; the extra room under the folder's name goes instead. Open
+  folders get the same tighter gap under their name.
+- Folders: the tabs in one no longer drop a few pixels as it closes.
+- Dragging a tab over the essentials: it taps as the tiles move aside for
+  it, as a split does, not for every tile crossed.
+- Dragging a tab back out of the essentials: it turns back into its row as
+  it grows, as a split does, not a tile stretched to a row's width first.
+- Dragging a tab out of a folder: the folder loses its highlight at once
+  (it lingered after the drop), and its box closes all the way as the tab
+  leaves.
+- Dragging a tab out of a folder: everything moves by a whole tab's height
+  (it was measured from the folder's name, now a little closer), so nothing
+  below snaps down on the drop.
+- Dragging a tab out of a folder: it widens back to a full tab at once, as
+  it narrowed going in.
+- Essentials: a row of fewer than would fit fills the sidebar, and the tiles
+  no longer jump as the sidebar widens.
+- Essentials: they close up behind one dragged out, and a tab dragged over
+  them no longer flips between a tile and a row.
+- Dragging a tab out of a folder: the folder eases shut to its closed height,
+  without opening a little first or the folders below snapping.
+
 ## [2.72.7] — 2026-09-29
 
 ### Changed
