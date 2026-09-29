@@ -4,6 +4,18 @@ Every release of Zia, newest first. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+
+- Folders are animated by Zia alone. Zen's own folder animations are
+  switched off, so Zen goes straight to each new layout (opening, closing,
+  showing just the open tab, letting go of it, unloading), and Zia
+  animates from what was on screen to it, the same way every time. The
+  many fixes for Zen's animations going stale when a folder was clicked
+  again part way, or for Zen writing its own values back after Zia's, are
+  gone with them.
+
 ## [2.71.5] — 2026-09-29
 
 ### Fixed

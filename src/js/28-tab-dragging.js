@@ -1048,6 +1048,8 @@
           placeBefore(tab, head);
         }
       }
+      // (it's where it landed already: no folding animation)
+      skipFolderAnimation(folder);
       try {
         if (!isCollapsed(folder)) {
           folder.collapsed = true;
@@ -1599,6 +1601,7 @@
     // Shut at once: Zen's folding animations jump to their last frame, so
     // the list has its closed layout straight away
     const snapShut = (folder) => {
+      skipFolderAnimation(folder);
       try {
         folder.collapsed = true;
       } catch (err) {
