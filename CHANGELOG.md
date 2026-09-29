@@ -4,6 +4,25 @@ Every release of Zia, newest first. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.71.5] — 2026-09-29
+
+### Fixed
+
+- The buttons on tab cards (pin, split, copy link), in split view panes
+  and in Glance no longer show brighter spots where an icon's strokes
+  overlap.
+- Dragging a tab past a closed folder showing its open tab, the folder
+  moves aside as one: the tab it shows no longer came apart from its name,
+  and the tabs it hides no longer showed (one appeared as "Revert").
+- A tab can be dropped at the top of a closed folder showing its open tab,
+  between the folder's name and that tab, which moves down to make room.
+- Opening a tab no longer leaves the tabs' right edge out of line with the
+  pinned tiles above until the sidebar is resized.
+- Just after dropping a tab, the tab you hover shows its x straight away,
+  a tab dropped into a folder no longer shows its x and its - at once,
+  and moving on to the next tab in the folder, the dropped one's - goes
+  (both showed one).
+
 ## [2.71.4] — 2026-09-29
 
 ### Fixed

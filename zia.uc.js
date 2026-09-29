@@ -2382,6 +2382,13 @@
     const tab = [...space.querySelectorAll(".tabbrowser-tab:not([zen-essential])")].find(
       (t) => !t.closest(FOLDER_SELECTOR) && visibleRect(t.querySelector(".tab-background"))
     );
+    // (a tab still opening is measured once it's in place: measured as it
+    // came in, the tabs kept a wrong right edge until the sidebar was
+    // resized)
+    if (tab && (isSliding(tab) || tab.getAnimations().length) && edgeRetries < EDGE_MAX_RETRIES) {
+      retryEdgeAlignSoon();
+      return;
+    }
     if (tab) {
       const rect = visibleRect(tab.querySelector(".tab-background"));
 
@@ -2494,6 +2501,9 @@
       });
     }
     gBrowser.tabContainer.addEventListener("TabSelect", () => scheduleEdgeAlign());
+    for (const type of ["TabOpen", "TabClose"]) {
+      gBrowser.tabContainer.addEventListener(type, () => scheduleEdgeAlignAfterSwitch());
+    }
     const onSpaceSwitch = () => scheduleEdgeAlignAfterSwitch();
     for (const type of ["TabGroupExpand", "TabGroupCollapse", "TabGrouped", "TabUngrouped"]) {
       window.addEventListener(type, onSpaceSwitch);
@@ -9175,21 +9185,32 @@
           continue;
         }
         let node = nodeToMove(item);
-        const host = node?.closest?.("zen-folder, tab-group:not([split-view-group])");
-        if (
-          host &&
-          host !== node &&
-          (host.hasAttribute("collapsed") || host.collapsed) &&
-          node.classList?.contains("tab-group-label-container") &&
-          !host.contains(keepOpen)
+        // A closed folder is one row, the whole of it: its name and the tab
+        // it shows, if any. (The tab it shows was a row of its own too, so
+        // it moved aside twice, once with its folder and once more, and came
+        // apart from it; the tabs it hides could be uncovered.)
+        let closed = null;
+        for (
+          let host = node?.closest?.("zen-folder, tab-group:not([split-view-group])");
+          host;
+          host = host.parentElement?.closest?.("zen-folder, tab-group:not([split-view-group])")
         ) {
-          node = host;
+          if (host !== node && (host.hasAttribute("collapsed") || host.collapsed) && !host.contains(keepOpen)) {
+            closed = host;
+          }
+        }
+        if (closed) {
+          node = closed;
         }
         if (!node || seen.has(node)) {
           continue;
         }
         seen.add(node);
         const box = layoutTop(node);
+        // (a closed folder showing its open tab: its name's height, where a
+        // tab can go in above the one it shows)
+        const header = closed && closed.hasAttribute("has-active") ? headerOf(closed) : null;
+        const head = header ? layoutTop(header).height : 0;
         rows.push({
           item,
           node,
@@ -9197,6 +9218,7 @@
           top: box.top,
           mid: box.top + box.height / 2,
           height: box.height,
+          head: head > 0 && head < box.height - 4 ? head : 0,
           delta: 0,
         });
       }
@@ -9318,6 +9340,31 @@
       tab?.toggleAttribute("zia-into-empty", into);
     };
 
+    // The room for a tab going in at the top of a closed folder showing its
+    // open tab: that tab (and the folder's contents) move down a tab's
+    // height, or, coming from above, the folder's name moves up
+    let topRoom = null;
+    const roomAtTop = (folder, way) => {
+      const key = folder ? `${way}` : null;
+      if (topRoom?.folder === folder && topRoom?.key === key) {
+        return;
+      }
+      if (topRoom) {
+        topRoom.node.style.removeProperty("translate");
+        topRoom = null;
+      }
+      if (!folder || !drag) {
+        return;
+      }
+      const node = way === "up" ? headerOf(folder) : folder.querySelector(":scope > .tab-group-container");
+      if (!node) {
+        return;
+      }
+      node.style.setProperty("transition", "translate 0.15s ease");
+      node.style.setProperty("translate", `0 ${way === "up" ? -drag.pitch : drag.pitch}px`);
+      topRoom = { folder, key, node };
+    };
+
     const updateTarget = (visualMid) => {
       let prev = null;
       let next = null;
@@ -9376,14 +9423,32 @@
       } else if (nf && !isFolderStart(next, nf)) {
         folder = nf;
       }
+      // Between a closed folder's name and the tab it shows: into it, at
+      // the top (a tab only; the one it shows moves down to make room, or
+      // the name up)
+      let first = null;
+      const shows = (row) => !!row?.head && isFolderEl(row.node) && isCollapsed(row.node) && same(row);
+      if (!drag.folder) {
+        if (folder === pf && shows(prev) && visualMid < prev.top + (prev.delta || 0) + prev.head + (prev.height - prev.head) / 2) {
+          first = "down";
+        } else if (!folder && shows(next) && !drag.shifted.has(next.node) && visualMid > next.top + (next.delta || 0) + next.head / 2) {
+          folder = next.node;
+          first = "up";
+        }
+        if (first) {
+          atEnd = false;
+        }
+      }
       if (folder && drag.moving.contains?.(folder)) {
         folder = null;
+        first = null;
       }
       // a folder goes into another only where Zen allows that deep
       if (drag.folder && folder && !canNest(drag.folder, folder)) {
         folder = null;
         atEnd = false;
       }
+      roomAtTop(first ? folder : null, first);
 
       const crosses = below === !!drag.tab.pinned;
 
@@ -9397,7 +9462,7 @@
       if (drag.target && folder !== drag.target.folder) {
         tap();
       }
-      drag.target = { folder, atEnd, prev, next, below, sameNext: same(next), slotTop, hand };
+      drag.target = { folder, atEnd, first: !!first, prev, next, below, sameNext: same(next), slotTop, hand };
       setDropSlot(folder);
     };
 
@@ -9419,6 +9484,10 @@
         let grow = 0;
         if (isCollapsed(f) && !f.contains(drag.moving)) {
           grow = into ? drag.pitch : 0;
+          if (into && topRoom?.folder === f && topRoom.key === "up") {
+            top = -drag.pitch;
+            grow = 0;
+          }
         } else {
           let origBottom = -Infinity;
           let shownBottom = -Infinity;
@@ -9453,6 +9522,12 @@
     };
 
     const clearFolderPaint = () => {
+      if (topRoom) {
+        const { node } = topRoom;
+        topRoom = null;
+        node.style.removeProperty("translate");
+        setTimeout(() => node.style.removeProperty("transition"), 200);
+      }
       for (const f of paintedFolders) {
         f.removeAttribute("zia-bg-shift");
         f.style.removeProperty("--zia-drag-bg-top");
@@ -9747,10 +9822,12 @@
         }
         const was = drag.shifted.has(row.node);
         let shift = false;
+        // (a closed folder showing a tab moves aside only once the tab is
+        // past its name: over the tab it shows, the tab goes in above it)
         if (row.index > drag.index) {
-          shift = visualMid > row.top + (was ? -10 : 8);
+          shift = visualMid > row.top + (row.head || 0) + (was ? -10 : 8);
         } else if (row.index < drag.index) {
-          shift = visualMid < row.top + row.height - (was ? -10 : 8);
+          shift = visualMid < row.top + (row.head || row.height) - (was ? -10 : 8);
         }
         if (shift) {
           drag.shifted.add(row.node);
@@ -9908,7 +9985,7 @@
       pinFor(tab, !target.below);
       const folder = target.folder;
       if (folder && isCollapsed(folder)) {
-        parkInFolder(tab, folder);
+        parkInFolder(tab, folder, target.first);
         return;
       }
       if (folder && target.atEnd) {
@@ -10030,7 +10107,7 @@
       }
     };
 
-    const parkInFolder = (tab, folder) => {
+    const parkInFolder = (tab, folder, first = false) => {
       folder?.removeAttribute("zia-drop-slot");
       if (!tab || !folder) {
         return;
@@ -10049,6 +10126,16 @@
         if (!hadActive && !tab.selected) {
           folder.removeAttribute("has-active");
           folder.activeTabs = [];
+        }
+      }
+      // (let go between its name and the tab it shows: first in it)
+      if (first) {
+        const container = folder.querySelector(":scope > .tab-group-container");
+        const head = [...(container?.children || [])].find(
+          (el) => el !== tab && (gBrowser.isTab(el) || isFolderEl(el) || el.localName === "tab-group")
+        );
+        if (head) {
+          placeBefore(tab, head);
         }
       }
       try {
@@ -11751,7 +11838,23 @@
       const check = () => {
         if (!held.some((node) => node.matches(":hover"))) {
           release();
+          return;
         }
+        // A button is held only while the pointer is on its own tab: moved
+        // on to the next tab in the same folder (still over the folder, so
+        // still held), both tabs showed their -
+        buttons = buttons.filter((button) => {
+          const tab = button.closest(".tabbrowser-tab");
+          if (tab?.matches(":hover")) {
+            return true;
+          }
+          button.removeAttribute("zia-held-shown");
+          tab?.removeAttribute("zia-held-pinned");
+          if (tab && held.includes(tab)) {
+            tab.removeAttribute("zia-hover-held");
+          }
+          return false;
+        });
       };
       const release = () => {
         if (releaseHeld === release) {

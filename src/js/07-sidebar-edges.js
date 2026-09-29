@@ -81,6 +81,13 @@
     const tab = [...space.querySelectorAll(".tabbrowser-tab:not([zen-essential])")].find(
       (t) => !t.closest(FOLDER_SELECTOR) && visibleRect(t.querySelector(".tab-background"))
     );
+    // (a tab still opening is measured once it's in place: measured as it
+    // came in, the tabs kept a wrong right edge until the sidebar was
+    // resized)
+    if (tab && (isSliding(tab) || tab.getAnimations().length) && edgeRetries < EDGE_MAX_RETRIES) {
+      retryEdgeAlignSoon();
+      return;
+    }
     if (tab) {
       const rect = visibleRect(tab.querySelector(".tab-background"));
 
@@ -193,6 +200,9 @@
       });
     }
     gBrowser.tabContainer.addEventListener("TabSelect", () => scheduleEdgeAlign());
+    for (const type of ["TabOpen", "TabClose"]) {
+      gBrowser.tabContainer.addEventListener(type, () => scheduleEdgeAlignAfterSwitch());
+    }
     const onSpaceSwitch = () => scheduleEdgeAlignAfterSwitch();
     for (const type of ["TabGroupExpand", "TabGroupCollapse", "TabGrouped", "TabUngrouped"]) {
       window.addEventListener(type, onSpaceSwitch);

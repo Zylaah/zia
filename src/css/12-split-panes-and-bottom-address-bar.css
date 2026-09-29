@@ -168,12 +168,13 @@
     height: 16px;
     -moz-context-properties: fill, fill-opacity;
     fill: currentColor;
-    fill-opacity: 0.85;
+    /* (faded as a whole: overlapping strokes showed brighter) */
+    opacity: 0.85;
     pointer-events: none;
   }
 
   &[disabled] img {
-    fill-opacity: 0.35;
+    opacity: 0.35;
   }
 }
 
