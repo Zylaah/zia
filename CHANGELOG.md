@@ -4,6 +4,14 @@ Every release of Zia, newest first. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Fixed
+
+- The buttons on tab cards (pin, split, copy link), in split view panes
+  and in Glance no longer show brighter spots where an icon's strokes
+  overlap.
+
 ## [2.71.4] — 2026-09-29
 
 ### Fixed

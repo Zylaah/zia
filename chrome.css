@@ -2484,12 +2484,15 @@ zen-workspace[collapsedpinnedtabs] :is(zen-folder, tab-group:not([split-view-gro
   justify-content: center;
 }
 
+/* (faded as a whole, not each shape: where an icon's strokes overlap, the
+   pin's corners and the split's middle, they showed brighter) */
 .zia-tab-card-action img {
   width: 17px;
   height: 17px;
   -moz-context-properties: fill, fill-opacity;
   fill: rgb(255, 255, 255);
-  fill-opacity: 0.55;
+  fill-opacity: 1;
+  opacity: 0.55;
   pointer-events: none;
 }
 
@@ -2498,7 +2501,7 @@ zen-workspace[collapsedpinnedtabs] :is(zen-folder, tab-group:not([split-view-gro
 }
 
 .zia-tab-card-action:hover img {
-  fill-opacity: 1;
+  opacity: 1;
 }
 
 .tabbrowser-tab .tab-content > :is(.tab-close-button, .tab-reset-button):active {
@@ -3961,12 +3964,13 @@ findbar {
     height: 16px;
     -moz-context-properties: fill, fill-opacity;
     fill: currentColor;
-    fill-opacity: 0.85;
+    /* (faded as a whole: overlapping strokes showed brighter) */
+    opacity: 0.85;
     pointer-events: none;
   }
 
   &[disabled] img {
-    fill-opacity: 0.35;
+    opacity: 0.35;
   }
 }
 
@@ -5093,12 +5097,10 @@ zen-folder .tab-reset-button {
     color: rgb(255, 255, 255) !important;
     -moz-context-properties: fill, fill-opacity;
     fill: currentColor !important;
-    fill-opacity: 0.85;
     transition: background-color 0.06s linear, scale 0.2s var(--zia-spring) !important;
 
     &:hover {
       background: rgba(255, 255, 255, 0.1) !important;
-      fill-opacity: 1;
       scale: 1 !important;
     }
 
@@ -5106,7 +5108,13 @@ zen-folder .tab-reset-button {
       scale: 0.92 !important;
     }
 
+    &:hover > .toolbarbutton-icon {
+      opacity: 1;
+    }
+
+    /* (faded as a whole: overlapping strokes showed brighter) */
     & > .toolbarbutton-icon {
+      opacity: 0.85;
       width: 16px !important;
       height: 16px !important;
       list-style-image: inherit !important;

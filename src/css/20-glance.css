@@ -29,12 +29,10 @@
     color: rgb(255, 255, 255) !important;
     -moz-context-properties: fill, fill-opacity;
     fill: currentColor !important;
-    fill-opacity: 0.85;
     transition: background-color 0.06s linear, scale 0.2s var(--zia-spring) !important;
 
     &:hover {
       background: rgba(255, 255, 255, 0.1) !important;
-      fill-opacity: 1;
       scale: 1 !important;
     }
 
@@ -42,7 +40,13 @@
       scale: 0.92 !important;
     }
 
+    &:hover > .toolbarbutton-icon {
+      opacity: 1;
+    }
+
+    /* (faded as a whole: overlapping strokes showed brighter) */
     & > .toolbarbutton-icon {
+      opacity: 0.85;
       width: 16px !important;
       height: 16px !important;
       list-style-image: inherit !important;
