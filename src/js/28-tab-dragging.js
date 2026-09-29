@@ -109,8 +109,22 @@
             closed = host;
           }
         }
-        if (closed) {
+        // (only a folder showing a tab: a plain closed folder is its name,
+        // as before, and a tab dragged up past the separator lands below
+        // it first)
+        if (closed?.hasAttribute("has-active")) {
           node = closed;
+        } else {
+          const host = node?.closest?.("zen-folder, tab-group:not([split-view-group])");
+          if (
+            host &&
+            host !== node &&
+            (host.hasAttribute("collapsed") || host.collapsed) &&
+            node.classList?.contains("tab-group-label-container") &&
+            !host.contains(keepOpen)
+          ) {
+            node = host;
+          }
         }
         if (!node || seen.has(node)) {
           continue;
@@ -119,7 +133,7 @@
         const box = layoutTop(node);
         // (a closed folder showing its open tab: its name's height, where a
         // tab can go in above the one it shows)
-        const header = closed && closed.hasAttribute("has-active") ? headerOf(closed) : null;
+        const header = closed?.hasAttribute("has-active") && node === closed ? headerOf(closed) : null;
         const head = header ? layoutTop(header).height : 0;
         rows.push({
           item,

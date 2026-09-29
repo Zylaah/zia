@@ -16,6 +16,13 @@ Every release of Zia, newest first. The format follows
   again part way, or for Zen writing its own values back after Zia's, are
   gone with them.
 
+### Fixed
+
+- Dragging a tab up past the separator, it lands below the last folder
+  first again before going in (the change for closed folders showing a
+  tab had taken that away for plain closed folders).
+- No scrollbar shows down the tab list.
+
 ## [2.71.5] — 2026-09-29
 
 ### Fixed
