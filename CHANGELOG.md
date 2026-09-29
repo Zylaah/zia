@@ -22,6 +22,9 @@ Every release of Zia, newest first. The format follows
   folder first, then goes in still sitting in the space made for it: it
   counted as past the separator at the same point it went in, so it went
   straight in.
+- Dragging a tab back down out of the last folder, it leaves once its
+  bottom meets the folder's, and past the separator again at the point it
+  crossed it, so no empty space shows above it.
 - No scrollbar shows down the tab list (Zen gives each space's list its own,
   which the stylesheet didn't reach).
 
