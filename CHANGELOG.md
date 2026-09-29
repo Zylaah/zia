@@ -4,6 +4,17 @@ Every release of Zia, newest first. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.72.10] — 2026-09-29
+
+### Fixed
+
+- Folders: tucking the workspace's folders away (clicking its name) leaves no
+  gaps above or below the one still showing.
+- Spaces: with the pinned tabs tucked away, choosing a tab outside them
+  tucks away the one that was open among them too (it stayed showing).
+- Folders: a folder inside another that's open opens along with it, its tabs
+  sliding in, not snapping in afterwards.
+
 ## [2.72.9] — 2026-09-29
 
 ### Fixed
