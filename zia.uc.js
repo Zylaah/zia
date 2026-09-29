@@ -2089,6 +2089,52 @@
     return keyframes;
   }
 
+  // A space's pinned tabs tucked away and no longer showing a tab: the
+  // folder that showed it shrinks away by itself, and Zen also pushes the
+  // whole list up by that folder's height, so the separator shot up out of
+  // sight and snapped back once Zen set where it ends (-4px). Zen's push is
+  // made to end there, the separator travelling up to its place.
+  function settleTuckedPins(element, keyframes) {
+    const pins = window.gZenWorkspaces?.activeWorkspaceElement?.collapsiblePins;
+    if (!pins || element !== pins.groupStartElement || !pins.collapsed || pins.hasAttribute("has-active")) {
+      return keyframes;
+    }
+    // (only with folders squashed from showing one tab: tucked away with
+    // none showing, Zen's push is right)
+    // (held there by Zen's finished animations, not a style of their own)
+    // (Zen's hidden placeholder tab and any row not shown are always
+    // nothing high: not a sign of it)
+    const rows = (pins.allItems || []).filter((item) => !item.hasAttribute("zen-empty-tab") && !item.hidden && getComputedStyle(item).display !== "none");
+    if (!rows.some((item) => item.getBoundingClientRect().height < 1)) {
+      return keyframes;
+    }
+    const px = (v) => parseFloat(v);
+    const target = -4;
+    if (Array.isArray(keyframes) && keyframes.length >= 2) {
+      const from = px(keyframes[0]?.marginTop);
+      const to = px(keyframes.at(-1)?.marginTop);
+      if (!Number.isFinite(from) || !Number.isFinite(to) || to >= target || from === to) {
+        return keyframes;
+      }
+      const scale = (target - from) / (to - from);
+      return keyframes.map((frame) => {
+        const v = px(frame?.marginTop);
+        return Number.isFinite(v) ? { ...frame, marginTop: `${from + (v - from) * scale}px` } : frame;
+      });
+    }
+    const list = keyframes?.marginTop;
+    if (Array.isArray(list) && list.length >= 2) {
+      const from = px(list[0]);
+      const to = px(list.at(-1));
+      if (!Number.isFinite(from) || !Number.isFinite(to) || to >= target || from === to) {
+        return keyframes;
+      }
+      const scale = (target - from) / (to - from);
+      return { ...keyframes, marginTop: list.map((v) => (Number.isFinite(px(v)) ? `${from + (px(v) - from) * scale}px` : v)) };
+    }
+    return keyframes;
+  }
+
   function addFolderBounce() {
     const animate = Element.prototype.animate;
     if (animate.__zia) {
@@ -2097,6 +2143,7 @@
     const patched = function (keyframes, options) {
       try {
         keyframes = fadeBackIn(this, keyframes);
+        keyframes = settleTuckedPins(this, keyframes);
       } catch (err) {
         noteError("folder bounce: fade back in", err);
       }
@@ -2364,6 +2411,69 @@
       } catch (err) {
         noteError("tuck away pins", err);
       }
+    });
+  }
+
+  // A space's pinned tabs tucked away, once none of them is shown any more
+  // (its tab unloaded with "-", or another tab chosen): Zen measures how far
+  // to push them up while the folders among them are still squashed to
+  // nothing from showing just that tab, so it pushed them up too little and
+  // the separator went up out of sight with them. Once Zen is done, they're
+  // pushed up their whole height, the separator staying where it shows.
+  function keepSeparatorWhenPinsTuck() {
+    const fix = (pins) => {
+      if (!pins?.isConnected || !pins.collapsed || pins.hasAttribute("has-active")) {
+        return;
+      }
+      const start = pins.groupStartElement;
+      const box = pins.groupContainer;
+      const sep = box?.separatorElement || box?.querySelector?.(".pinned-tabs-container-separator");
+      if (!start || !box || box.hasAttribute("hidden")) {
+        return;
+      }
+      if (start.getAnimations().some((a) => a.playState === "running")) {
+        requestAnimationFrame(() => fix(pins));
+        return;
+      }
+      const items = pins.allItems || [];
+      window.gZenFolders?.styleCleanup?.(items.filter((item) => item.style.height === "0px" || item.style.opacity === "0"));
+      start.style.marginTop = "0px";
+      const full = box.getBoundingClientRect().height - (sep ? sep.getBoundingClientRect().height : 0);
+      start.style.marginTop = `${-(full + 4)}px`;
+    };
+    // (the moment the list shrinks under it, before it's drawn: put right
+    // later, the separator went and came back, rather than stopping where
+    // it had travelled up to)
+    const watched = new WeakSet();
+    const watch = () => {
+      const pins = window.gZenWorkspaces?.activeWorkspaceElement?.collapsiblePins;
+      const box = pins?.groupContainer;
+      if (!box || watched.has(box)) {
+        return;
+      }
+      watched.add(box);
+      new ResizeObserver(() => {
+        const sep = box.separatorElement || box.querySelector(".pinned-tabs-container-separator");
+        if (sep && sep.getBoundingClientRect().bottom <= box.getBoundingClientRect().top + 1) {
+          fix(pins);
+        }
+      }).observe(box);
+    };
+    watch();
+    window.addEventListener("ZenWorkspacesUIUpdate", watch);
+    gBrowser.tabContainer.addEventListener("TabSelect", watch);
+    new MutationObserver((records) => {
+      for (const record of records) {
+        const pins = record.target;
+        if (pins === window.gZenWorkspaces?.activeWorkspaceElement?.collapsiblePins && record.oldValue !== null && !pins.hasAttribute("has-active")) {
+          requestAnimationFrame(() => fix(pins));
+        }
+      }
+    }).observe(document.documentElement, {
+      subtree: true,
+      attributes: true,
+      attributeOldValue: true,
+      attributeFilter: ["has-active"],
     });
   }
 
@@ -13799,6 +13909,7 @@
     safely("keepFolderNamesInCollapsedSpaces", keepFolderNamesInCollapsedSpaces);
     safely("tuckAwayUnopenedPins", tuckAwayUnopenedPins);
     safely("revealOpenSubfolders", revealOpenSubfolders);
+    safely("keepSeparatorWhenPinsTuck", keepSeparatorWhenPinsTuck);
     safely("keepTabsHiddenAfterActiveLeaves", keepTabsHiddenAfterActiveLeaves);
     safely("openKeptFolderNames", openKeptFolderNames);
     safely("allowEmojiFolderIcons", allowEmojiFolderIcons);
