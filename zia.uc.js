@@ -9175,15 +9175,22 @@
           continue;
         }
         let node = nodeToMove(item);
-        const host = node?.closest?.("zen-folder, tab-group:not([split-view-group])");
-        if (
-          host &&
-          host !== node &&
-          (host.hasAttribute("collapsed") || host.collapsed) &&
-          node.classList?.contains("tab-group-label-container") &&
-          !host.contains(keepOpen)
+        // A closed folder is one row, the whole of it: its name and the tab
+        // it shows, if any. (The tab it shows was a row of its own too, so
+        // it moved aside twice, once with its folder and once more, and came
+        // apart from it; the tabs it hides could be uncovered.)
+        let closed = null;
+        for (
+          let host = node?.closest?.("zen-folder, tab-group:not([split-view-group])");
+          host;
+          host = host.parentElement?.closest?.("zen-folder, tab-group:not([split-view-group])")
         ) {
-          node = host;
+          if (host !== node && (host.hasAttribute("collapsed") || host.collapsed) && !host.contains(keepOpen)) {
+            closed = host;
+          }
+        }
+        if (closed) {
+          node = closed;
         }
         if (!node || seen.has(node)) {
           continue;

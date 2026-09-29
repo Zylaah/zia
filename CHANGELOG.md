@@ -11,6 +11,9 @@ Every release of Zia, newest first. The format follows
 - The buttons on tab cards (pin, split, copy link), in split view panes
   and in Glance no longer show brighter spots where an icon's strokes
   overlap.
+- Dragging a tab past a closed folder showing its open tab, the folder
+  moves aside as one: the tab it shows no longer came apart from its name,
+  and the tabs it hides no longer showed (one appeared as "Revert").
 
 ## [2.71.4] — 2026-09-29
 
