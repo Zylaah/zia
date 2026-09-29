@@ -18,10 +18,12 @@ Every release of Zia, newest first. The format follows
 
 ### Fixed
 
-- Dragging a tab up past the separator, it lands below the last folder
-  first again before going in (the change for closed folders showing a
-  tab had taken that away for plain closed folders).
-- No scrollbar shows down the tab list.
+- Dragging a tab up past the separator, it lands in the gap below the last
+  folder first, and only goes in once its middle reaches the folder: it
+  counted as past the separator at the same point it went in, so it went
+  straight in.
+- No scrollbar shows down the tab list (Zen gives each space's list its own,
+  which the stylesheet didn't reach).
 
 ## [2.71.5] — 2026-09-29
 

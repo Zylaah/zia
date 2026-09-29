@@ -329,7 +329,11 @@
           // one so tall it seemed not to go in at the folder's edge; only
           // over the folder's own end, it went in sitting over the folder's
           // name, with the room made for it empty below.)
-          cut = slotTop + drag.height * 0.5;
+          // (from below the separator, it only counts as past it half a tab
+          // up, the same point halfway gave: it went straight in. It goes
+          // in once its middle reaches the folder's end, leaving the gap.)
+          const fromBelow = drag.sepTop != null && drag.origin > drag.sepTop;
+          cut = slotTop + drag.height * (fromBelow ? 0.05 : 0.5);
         } else {
           const down = leaveDown(next);
           if (down != null) {

@@ -2307,6 +2307,35 @@
     setTimeout(scheduleEdgeAlign, 2000);
   }
 
+  // No scrollbar down the tab list: Zen gives each space's list its own
+  // (shown once it overflows), inside its scroll box, where the stylesheet's
+  // "no scrollbars" didn't reach. Set on the scroll box itself, for every
+  // space, including ones made later.
+  function hideTabListScrollbars() {
+    const toolbox = document.getElementById("navigator-toolbox");
+    if (!toolbox) {
+      return;
+    }
+    const apply = () => {
+      for (const box of document.querySelectorAll("zen-workspace arrowscrollbox, #tabbrowser-arrowscrollbox")) {
+        const inner = box.scrollbox || box.shadowRoot?.querySelector('[part~="scrollbox"]');
+        if (inner && inner.style.getPropertyValue("scrollbar-width") !== "none") {
+          inner.style.setProperty("scrollbar-width", "none", "important");
+        }
+      }
+    };
+    let frame = null;
+    new MutationObserver(() => {
+      if (!frame) {
+        frame = requestAnimationFrame(() => {
+          frame = null;
+          apply();
+        });
+      }
+    }).observe(toolbox, { childList: true, subtree: true });
+    apply();
+  }
+
   const mediaColorCache = new Map();
 
   function artUrlOf(card) {
@@ -9210,7 +9239,11 @@
           // one so tall it seemed not to go in at the folder's edge; only
           // over the folder's own end, it went in sitting over the folder's
           // name, with the room made for it empty below.)
-          cut = slotTop + drag.height * 0.5;
+          // (from below the separator, it only counts as past it half a tab
+          // up, the same point halfway gave: it went straight in. It goes
+          // in once its middle reaches the folder's end, leaving the gap.)
+          const fromBelow = drag.sepTop != null && drag.origin > drag.sepTop;
+          cut = slotTop + drag.height * (fromBelow ? 0.05 : 0.5);
         } else {
           const down = leaveDown(next);
           if (down != null) {
@@ -12709,6 +12742,7 @@
     safely("createWorkspaceSlot", createWorkspaceSlot);
     safely("watchTabAnimations", watchTabAnimations);
     safely("moveTabsLikeDia", moveTabsLikeDia);
+    safely("hideTabListScrollbars", hideTabListScrollbars);
     safely("addFolderBounce", addFolderBounce);
     // (Zen's folders may still be starting up)
     for (const wait of [500, 2000, 5000]) {

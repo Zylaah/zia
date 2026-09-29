@@ -247,6 +247,7 @@
     safely("createWorkspaceSlot", createWorkspaceSlot);
     safely("watchTabAnimations", watchTabAnimations);
     safely("moveTabsLikeDia", moveTabsLikeDia);
+    safely("hideTabListScrollbars", hideTabListScrollbars);
     safely("addFolderBounce", addFolderBounce);
     // (Zen's folders may still be starting up)
     for (const wait of [500, 2000, 5000]) {

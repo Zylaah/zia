@@ -2787,14 +2787,6 @@ zen-workspace arrowscrollbox::part(scrollbox) {
   scrollbar-width: none !important;
 }
 
-/* (and see-through, which also reaches scrolling parts inside Zen's own
-   elements, where the rule above can't: a thin bar showed down the tab
-   list again) */
-#navigator-toolbox,
-zen-workspace {
-  scrollbar-color: transparent transparent !important;
-}
-
 :is(zen-folder, tab-group:not([split-view-group])) > .tab-group-label-container {
   font-weight: var(--zia-folder-weight) !important;
 }
