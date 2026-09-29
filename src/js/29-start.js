@@ -247,7 +247,12 @@
     safely("createWorkspaceSlot", createWorkspaceSlot);
     safely("watchTabAnimations", watchTabAnimations);
     safely("moveTabsLikeDia", moveTabsLikeDia);
+    safely("hideTabListScrollbars", hideTabListScrollbars);
     safely("addFolderBounce", addFolderBounce);
+    // (Zen's folders may still be starting up)
+    for (const wait of [500, 2000, 5000]) {
+      setTimeout(() => safely("addFolderBounce", addFolderBounce), wait);
+    }
     safely("keepFolderNamesInCollapsedSpaces", keepFolderNamesInCollapsedSpaces);
     safely("keepTabsHiddenAfterActiveLeaves", keepTabsHiddenAfterActiveLeaves);
     safely("openKeptFolderNames", openKeptFolderNames);

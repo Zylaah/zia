@@ -4,6 +4,30 @@ Every release of Zia, newest first. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.72.0] — 2026-09-29
+
+### Changed
+
+- Folders are animated by Zia alone. Zen's own folder animations are
+  switched off, so Zen goes straight to each new layout (opening, closing,
+  showing just the open tab, letting go of it, unloading), and Zia
+  animates from what was on screen to it, the same way every time. The
+  many fixes for Zen's animations going stale when a folder was clicked
+  again part way, or for Zen writing its own values back after Zia's, are
+  gone with them.
+
+### Fixed
+
+- Dragging a tab up past the separator, it lands in the gap below the last
+  folder first, then goes in still sitting in the space made for it: it
+  counted as past the separator at the same point it went in, so it went
+  straight in.
+- Dragging a tab back down out of the last folder, it leaves once its
+  bottom meets the folder's, and past the separator again at the point it
+  crossed it, so no empty space shows above it.
+- No scrollbar shows down the tab list (Zen gives each space's list its own,
+  which the stylesheet didn't reach).
+
 ## [2.71.5] — 2026-09-29
 
 ### Fixed
