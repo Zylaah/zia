@@ -4,6 +4,13 @@ Every release of Zia, newest first. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.71.4] — 2026-09-29
+
+### Fixed
+
+- A YouTube live stream in the music player shows LIVE, as Twitch and Kick
+  do, instead of a progress line that jumped about.
+
 ## [2.71.3] — 2026-09-28
 
 ### Fixed

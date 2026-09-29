@@ -3339,6 +3339,51 @@
     return "";
   }
 
+  // A YouTube live stream gives the card a position and a length (the part
+  // of the stream it keeps to go back through), so Zen shows it as a video,
+  // with a progress line that jumps about. Asked of YouTube's own player (it
+  // marks a live stream) every so often, the card shows LIVE instead, as it
+  // does for Twitch and Kick.
+  const youTubeLiveChecked = new WeakMap();
+
+  function markYouTubeLive(card) {
+    const element = card.element;
+    const browser = card.browser;
+    if (!element || !browser) {
+      return;
+    }
+    let host = "";
+    try {
+      host = browser.currentURI?.host || "";
+    } catch (err) {
+      host = "";
+    }
+    if (!/(^|\.)youtube\.com$/.test(host)) {
+      element.removeAttribute("zia-live");
+      return;
+    }
+    const spec = browser.currentURI.spec;
+    const last = youTubeLiveChecked.get(element);
+    if (last && last.spec === spec && Date.now() - last.at < 10000) {
+      return;
+    }
+    youTubeLiveChecked.set(element, { spec, at: Date.now() });
+    let actor = null;
+    try {
+      actor = browser.browsingContext?.currentWindowGlobal?.getActor("Zia");
+    } catch (err) {
+      actor = null;
+    }
+    actor
+      ?.sendQuery("Zia:YouTubeLive", {})
+      .then((live) => {
+        if (card.browser?.currentURI?.spec === spec) {
+          element.toggleAttribute("zia-live", !!live);
+        }
+      })
+      .catch(() => {});
+  }
+
   function useMediaArtwork() {
     const front = window.gZenMediaController?.frontCard;
     const proto = front && Object.getPrototypeOf(front);
@@ -3354,6 +3399,7 @@
           this.element.__ziaCard = this;
           watchTimeLeft(this);
           showTimeLeft(this);
+          markYouTubeLive(this);
           if (!known) {
             repaintSoundTabs();
           }

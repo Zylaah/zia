@@ -59,6 +59,11 @@ export class ZiaChild extends JSWindowActorChild {
   // favicon: the channel's own picture is asked of Kick by the page itself
   // (as Kick's site does), for the channel named in the address.
   async receiveMessage(message) {
+    if (message.name === "Zia:YouTubeLive") {
+      // YouTube's player marks a live stream (where it shows its "LIVE"
+      // badge in place of the time)
+      return !!this.document?.querySelector(".html5-video-player.ytp-live, .html5-video-player .ytp-time-display.ytp-live");
+    }
     if (message.name === "Zia:YouTubeAvatar") {
       return this.#youTubeAvatar();
     }

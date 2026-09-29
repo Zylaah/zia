@@ -3018,7 +3018,7 @@ zen-workspace arrowscrollbox::part(scrollbox) {
     }
   }
 
-  .zen-media-card[media-position-hidden] .zia-ring-fill {
+  .zen-media-card:is([media-position-hidden], [zia-live]) .zia-ring-fill {
     opacity: 0;
   }
 
@@ -3086,7 +3086,7 @@ zen-workspace arrowscrollbox::part(scrollbox) {
     display: none !important;
   }
 
-  .zen-media-card[media-position-hidden]:not([media-sharing]) .zen-media-progress-hbox {
+  .zen-media-card:is([media-position-hidden], [zia-live]):not([media-sharing]) .zen-media-progress-hbox {
     & > * {
       display: none !important;
     }
