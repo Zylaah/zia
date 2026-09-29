@@ -332,8 +332,12 @@
           // (from below, it counts as past the separator a fifth of the way
           // into the space that opens, so there's a gap before this point;
           // lower, and it went in sitting over the folder's name)
+          // Leaving it, going down, it stays in until its bottom meets the
+          // folder's (the room made for it): at the same point it went in,
+          // it left a little early, a tiny gap under the folder.
           const fromBelow = drag.sepTop != null && drag.origin > drag.sepTop;
-          cut = slotTop + drag.height * (fromBelow ? 0.4 : 0.5);
+          const inIt = drag.target?.folder === pf;
+          cut = slotTop + drag.height * (fromBelow && !inIt ? 0.4 : 0.5);
         } else {
           const down = leaveDown(next);
           if (down != null) {
