@@ -4,6 +4,14 @@ Every release of Zia, newest first. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.72.1] — 2026-09-29
+
+### Fixed
+
+- A tab dropped into an empty closed folder keeps the folder shut, showing
+  the tab, instead of the folder flashing open (Zen opens a folder whose
+  only tab is the open one).
+
 ## [2.72.0] — 2026-09-29
 
 ### Changed

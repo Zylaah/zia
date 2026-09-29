@@ -9997,7 +9997,15 @@
         if (!isCollapsed(folder)) {
           folder.collapsed = true;
         } else if (tab.selected) {
-          window.gZenFolders?.animateSelect?.(folder);
+          // (the only tab in it, Zen opens the folder instead: it's kept
+          // shut, showing the tab, as a drop into any closed folder is. It
+          // flashed open, and shut again with the next drag.)
+          Promise.resolve(window.gZenFolders?.animateSelect?.(folder)).then(() => {
+            if (folder.isConnected && !isCollapsed(folder) && folder.contains(tab)) {
+              skipFolderAnimation(folder);
+              folder.collapsed = true;
+            }
+          });
         } else {
           window.gZenFolders?.on_TabGroupCollapse?.({ target: folder });
         }
