@@ -9692,14 +9692,14 @@
       if (drag.sepTop != null) {
         const startedBelow = drag.origin > drag.sepTop;
         let sepDelta = 0;
-        // Coming up from below, it's over once it's half a tab past the
-        // separator, and stays over until it's back past where the
-        // separator has moved to: the tab-sized space that opens is the
-        // last folder's end (top half) and the gap after it (bottom half)
-        // (past it once a fifth of the way into that space, not halfway:
+        // Coming up from below, it's over the separator once it's a fifth
+        // of the way into the tab-sized space that opens (not halfway:
         // the gap below the last folder then comes before the tab goes in,
         // and it goes in still sitting in the space made for it)
-        const upTo = drag.sepDelta ? drag.sepTop + drag.pitch + 2 : drag.sepTop + drag.pitch * 0.8;
+        // Back down, it's back under just past that same point (a few
+        // pixels' give, so it doesn't flicker): once a whole tab past, the
+        // space it had left sat empty above it for a moment.
+        const upTo = drag.sepTop + drag.pitch * 0.8 + (drag.sepDelta ? 4 : 0);
         if (startedBelow && visualMid < upTo) {
           sepDelta = drag.pitch;
         } else if (!startedBelow && visualMid > drag.sepTop + 2) {
