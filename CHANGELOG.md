@@ -16,6 +16,8 @@ Every release of Zia, newest first. The format follows
   and the tabs it hides no longer showed (one appeared as "Revert").
 - Opening a tab no longer leaves the tabs' right edge out of line with the
   pinned tiles above until the sidebar is resized.
+- Just after dropping a tab, the tab you hover shows its x straight away,
+  and a tab dropped into a folder no longer shows its x and its - at once.
 
 ## [2.71.4] — 2026-09-29
 
