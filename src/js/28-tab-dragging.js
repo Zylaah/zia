@@ -109,22 +109,8 @@
             closed = host;
           }
         }
-        // (only a folder showing a tab: a plain closed folder is its name,
-        // as before, and a tab dragged up past the separator lands below
-        // it first)
-        if (closed?.hasAttribute("has-active")) {
+        if (closed) {
           node = closed;
-        } else {
-          const host = node?.closest?.("zen-folder, tab-group:not([split-view-group])");
-          if (
-            host &&
-            host !== node &&
-            (host.hasAttribute("collapsed") || host.collapsed) &&
-            node.classList?.contains("tab-group-label-container") &&
-            !host.contains(keepOpen)
-          ) {
-            node = host;
-          }
         }
         if (!node || seen.has(node)) {
           continue;
@@ -133,7 +119,7 @@
         const box = layoutTop(node);
         // (a closed folder showing its open tab: its name's height, where a
         // tab can go in above the one it shows)
-        const header = closed?.hasAttribute("has-active") && node === closed ? headerOf(closed) : null;
+        const header = closed && closed.hasAttribute("has-active") ? headerOf(closed) : null;
         const head = header ? layoutTop(header).height : 0;
         rows.push({
           item,
@@ -256,16 +242,12 @@
       folder?.setAttribute("zia-drop-slot", "true");
       // Over an empty folder the tab covers its slot, so the tab carries the
       // slot's dashes instead (chrome.css), in the folder's colour.
-      // (a split too: its box, round both its tabs, wears them)
-      const tabs = drag.moving === drag.tab || (drag.split && drag.moving === drag.split) ? [drag.moving] : [];
-      const into = !!folder?.hasAttribute("zia-empty");
-      const border = into ? getComputedStyle(folder).getPropertyValue("--zia-slot-border") : "";
-      for (const tab of tabs) {
-        if (into) {
-          tab.style.setProperty("--zia-slot-border", border);
-        }
-        tab.toggleAttribute("zia-into-empty", into);
+      const tab = drag.moving === drag.tab ? drag.tab : null;
+      const into = !!tab && !!folder?.hasAttribute("zia-empty");
+      if (into) {
+        tab.style.setProperty("--zia-slot-border", getComputedStyle(folder).getPropertyValue("--zia-slot-border"));
       }
+      tab?.toggleAttribute("zia-into-empty", into);
     };
 
     // The room for a tab going in at the top of a closed folder showing its
@@ -333,15 +315,7 @@
           // one so tall it seemed not to go in at the folder's edge; only
           // over the folder's own end, it went in sitting over the folder's
           // name, with the room made for it empty below.)
-          // (from below, it counts as past the separator a fifth of the way
-          // into the space that opens, so there's a gap before this point;
-          // lower, and it went in sitting over the folder's name)
-          // Leaving it, going down, it stays in until its bottom meets the
-          // folder's (the room made for it): at the same point it went in,
-          // it left a little early, a tiny gap under the folder.
-          const fromBelow = drag.sepTop != null && drag.origin > drag.sepTop;
-          const inIt = drag.target?.folder === pf;
-          cut = slotTop + drag.height * (fromBelow && !inIt ? 0.4 : 0.5);
+          cut = slotTop + drag.height * 0.5;
         } else {
           const down = leaveDown(next);
           if (down != null) {
@@ -400,14 +374,6 @@
       }
       drag.target = { folder, atEnd, first: !!first, prev, next, below, sameNext: same(next), slotTop, hand };
       setDropSlot(folder);
-      // (zia.debug.drag in about:config: each decision, for a bug report)
-      if (window.ziaDragDebug) {
-        const name = (row) => (row ? `${row.node.localName}${row.node.label ? `"${row.node.label}"` : ""}@${Math.round(row.top + (row.delta || 0))}+${Math.round(row.height)}` : "-");
-        const line = `mid=${Math.round(visualMid)} prev=${name(prev)} next=${name(next)} pf=${pf?.label || "-"} nf=${nf?.label || "-"} slotTop=${slotTop == null ? "-" : Math.round(slotTop)} cut=${cut == null ? "-" : Math.round(cut)} below=${below} sepTop=${drag.sepTop == null ? "-" : Math.round(drag.sepTop)} → ${folder ? `INTO "${folder.label}"${atEnd ? " atEnd" : ""}${first ? " first" : ""}` : "list"}`;
-        if (window.ziaDragDebug.at(-1) !== line) {
-          window.ziaDragDebug.push(line);
-        }
-      }
     };
 
     const paintedFolders = new Set();
@@ -790,14 +756,11 @@
       if (drag.sepTop != null) {
         const startedBelow = drag.origin > drag.sepTop;
         let sepDelta = 0;
-        // Coming up from below, it's over the separator once it's a fifth
-        // of the way into the tab-sized space that opens (not halfway:
-        // the gap below the last folder then comes before the tab goes in,
-        // and it goes in still sitting in the space made for it)
-        // Back down, it's back under just past that same point (a few
-        // pixels' give, so it doesn't flicker): once a whole tab past, the
-        // space it had left sat empty above it for a moment.
-        const upTo = drag.sepTop + drag.pitch * 0.8 + (drag.sepDelta ? 4 : 0);
+        // Coming up from below, it's over once it's half a tab past the
+        // separator, and stays over until it's back past where the
+        // separator has moved to: the tab-sized space that opens is the
+        // last folder's end (top half) and the gap after it (bottom half)
+        const upTo = drag.sepDelta ? drag.sepTop + drag.pitch + 2 : drag.sepTop + drag.pitch / 2;
         if (startedBelow && visualMid < upTo) {
           sepDelta = drag.pitch;
         } else if (!startedBelow && visualMid > drag.sepTop + 2) {
@@ -1089,14 +1052,7 @@
         if (!isCollapsed(folder)) {
           folder.collapsed = true;
         } else if (tab.selected) {
-          // (the only tab in it, Zen opens the folder instead: it's kept
-          // shut, showing the tab, as a drop into any closed folder is. It
-          // flashed open, and shut again with the next drag.)
-          Promise.resolve(window.gZenFolders?.animateSelect?.(folder)).then(() => {
-            if (folder.isConnected && !isCollapsed(folder) && folder.contains(tab)) {
-              folder.collapsed = true;
-            }
-          });
+          window.gZenFolders?.animateSelect?.(folder);
         } else {
           window.gZenFolders?.on_TabGroupCollapse?.({ target: folder });
         }

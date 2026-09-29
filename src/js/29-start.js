@@ -247,7 +247,6 @@
     safely("createWorkspaceSlot", createWorkspaceSlot);
     safely("watchTabAnimations", watchTabAnimations);
     safely("moveTabsLikeDia", moveTabsLikeDia);
-    safely("hideTabListScrollbars", hideTabListScrollbars);
     safely("addFolderBounce", addFolderBounce);
     safely("keepFolderNamesInCollapsedSpaces", keepFolderNamesInCollapsedSpaces);
     safely("keepTabsHiddenAfterActiveLeaves", keepTabsHiddenAfterActiveLeaves);
