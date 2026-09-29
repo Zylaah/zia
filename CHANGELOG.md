@@ -14,6 +14,8 @@ Every release of Zia, newest first. The format follows
 - Dragging a tab past a closed folder showing its open tab, the folder
   moves aside as one: the tab it shows no longer came apart from its name,
   and the tabs it hides no longer showed (one appeared as "Revert").
+- Opening a tab no longer leaves the tabs' right edge out of line with the
+  pinned tiles above until the sidebar is resized.
 
 ## [2.71.4] — 2026-09-29
 
