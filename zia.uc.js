@@ -11768,7 +11768,23 @@
       const check = () => {
         if (!held.some((node) => node.matches(":hover"))) {
           release();
+          return;
         }
+        // A button is held only while the pointer is on its own tab: moved
+        // on to the next tab in the same folder (still over the folder, so
+        // still held), both tabs showed their -
+        buttons = buttons.filter((button) => {
+          const tab = button.closest(".tabbrowser-tab");
+          if (tab?.matches(":hover")) {
+            return true;
+          }
+          button.removeAttribute("zia-held-shown");
+          tab?.removeAttribute("zia-held-pinned");
+          if (tab && held.includes(tab)) {
+            tab.removeAttribute("zia-hover-held");
+          }
+          return false;
+        });
       };
       const release = () => {
         if (releaseHeld === release) {

@@ -17,7 +17,9 @@ Every release of Zia, newest first. The format follows
 - Opening a tab no longer leaves the tabs' right edge out of line with the
   pinned tiles above until the sidebar is resized.
 - Just after dropping a tab, the tab you hover shows its x straight away,
-  and a tab dropped into a folder no longer shows its x and its - at once.
+  a tab dropped into a folder no longer shows its x and its - at once,
+  and moving on to the next tab in the folder, the dropped one's - goes
+  (both showed one).
 
 ## [2.71.4] — 2026-09-29
 
