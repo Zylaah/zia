@@ -329,11 +329,11 @@
           // one so tall it seemed not to go in at the folder's edge; only
           // over the folder's own end, it went in sitting over the folder's
           // name, with the room made for it empty below.)
-          // (from below the separator, it only counts as past it half a tab
-          // up, the same point halfway gave: it went straight in. It goes
-          // in once its middle reaches the folder's end, leaving the gap.)
+          // (from below, it counts as past the separator a fifth of the way
+          // into the space that opens, so there's a gap before this point;
+          // lower, and it went in sitting over the folder's name)
           const fromBelow = drag.sepTop != null && drag.origin > drag.sepTop;
-          cut = slotTop + drag.height * (fromBelow ? 0.05 : 0.5);
+          cut = slotTop + drag.height * (fromBelow ? 0.4 : 0.5);
         } else {
           const down = leaveDown(next);
           if (down != null) {
@@ -786,7 +786,10 @@
         // separator, and stays over until it's back past where the
         // separator has moved to: the tab-sized space that opens is the
         // last folder's end (top half) and the gap after it (bottom half)
-        const upTo = drag.sepDelta ? drag.sepTop + drag.pitch + 2 : drag.sepTop + drag.pitch / 2;
+        // (past it once a fifth of the way into that space, not halfway:
+        // the gap below the last folder then comes before the tab goes in,
+        // and it goes in still sitting in the space made for it)
+        const upTo = drag.sepDelta ? drag.sepTop + drag.pitch + 2 : drag.sepTop + drag.pitch * 0.8;
         if (startedBelow && visualMid < upTo) {
           sepDelta = drag.pitch;
         } else if (!startedBelow && visualMid > drag.sepTop + 2) {

@@ -19,7 +19,7 @@ Every release of Zia, newest first. The format follows
 ### Fixed
 
 - Dragging a tab up past the separator, it lands in the gap below the last
-  folder first, and only goes in once its middle reaches the folder: it
+  folder first, then goes in still sitting in the space made for it: it
   counted as past the separator at the same point it went in, so it went
   straight in.
 - No scrollbar shows down the tab list (Zen gives each space's list its own,
