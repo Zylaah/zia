@@ -4,6 +4,21 @@ Every release of Zia, newest first. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.73.0] — 2026-09-30
+
+### Added
+
+- Your own SVG icons for folders and spaces, as for extensions: right-click
+  a folder or space, then Change icon → Choose an SVG…. It takes the
+  sidebar's colour, like Zia's own icons, or keeps its own colours. The
+  same menu opens the icon picker, or takes the icon off.
+
+### Fixed
+
+- The toolbar no longer flashes white on sites that show a white splash
+  before their dark page (Discord): a reading unlike the site's remembered
+  colour is only believed when a second, a moment later, agrees.
+
 ## [2.72.23] — 2026-09-30
 
 ### Changed

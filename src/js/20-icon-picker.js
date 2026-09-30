@@ -47,11 +47,11 @@
   // Anything that still asked for an icon before the pack was ready (the
   // first start with it) is drawn again.
   function redrawPackIcons() {
-    const prefix = `${ICON_DIR}/`;
+    const prefixes = [`${ICON_DIR}/`, "resource://zia-own-icons/"];
     for (const image of document.querySelectorAll("image, img")) {
       for (const name of ["src", "href"]) {
         const url = image.getAttribute(name);
-        if (url?.startsWith(prefix)) {
+        if (prefixes.some((prefix) => url?.startsWith(prefix))) {
           image.setAttribute(name, "");
           image.setAttribute(name, url);
           if (image.style.opacity === "0") {
