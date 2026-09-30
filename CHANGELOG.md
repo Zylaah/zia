@@ -4,6 +4,15 @@ Every release of Zia, newest first. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.72.14] — 2026-09-30
+
+### Fixed
+
+- Dropping a folder into a closed folder: it stays closed, without opening
+  to show all its tabs (the dropped folder missing from them for a frame).
+- The fine edge round essentials, folders and cards shows on 1x screens
+  (most Windows ones): at half a pixel it rounded to nothing there.
+
 ## [2.72.13] — 2026-09-29
 
 ### Fixed
