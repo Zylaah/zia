@@ -4,6 +4,19 @@ Every release of Zia, newest first. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.74.0] — 2026-09-30
+
+### Added
+
+- Numbered tabs, one of the simplest and most useful features yet. Hold
+  Cmd (Ctrl on Windows and Linux) and every tab and essential shows its
+  number; press the number to jump straight there. They only show while
+  you hold the key, so there's no extra clutter the rest of the time. It's
+  on by default and can be turned off in settings.
+- Tabs past 9 are reachable too: keep holding Cmd and type the digits in
+  turn. Cmd + 1 + 2 goes to tab 1, then on to tab 12, so single digits
+  stay instant.
+
 ## [2.73.1] — 2026-09-30
 
 ### Fixed
