@@ -2437,7 +2437,12 @@ zen-workspace[collapsedpinnedtabs] :is(zen-folder, tab-group:not([split-view-gro
 
 .zia-folder-card-list {
   padding: 6px;
-  max-height: calc(10 * 37px + 12px);
+  /* ten rows exactly: each is the tab's height with a margin above and
+     below, and between two rows those margins are one, so ten take ten
+     heights and eleven margins (at 37px a row, a sliver of the eleventh
+     showed under the tenth) */
+  --zia-folder-card-gap: calc((37px - var(--zia-tab-height)) / 2);
+  max-height: calc(10 * var(--zia-tab-height) + 11 * var(--zia-folder-card-gap) + 12px);
   box-sizing: border-box;
   overflow-y: auto;
   scrollbar-width: none;
