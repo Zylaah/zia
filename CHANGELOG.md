@@ -4,6 +4,14 @@ Every release of Zia, newest first. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.77.2] — 2026-10-01
+
+### Changed
+
+- A glance's picture on a tab no longer tilts as it drops back from its
+  bounce: it tips into place on the way up only. The small bounces after
+  the big one are slower, so it settles more naturally.
+
 ## [2.77.1] — 2026-10-01
 
 ### Changed
