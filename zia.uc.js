@@ -14365,12 +14365,16 @@
   const GLANCE_THUMB_H = 42;
   const GLANCE_THUMB_EVERY = 3000;
   // the sink in chrome.css; the hover tip eases home first
-  const GLANCE_THUMB_SINK_MS = 200;
+  const GLANCE_THUMB_SINK_MS = 300;
   const GLANCE_THUMB_UNTIP_MS = 450;
   const glanceHost = new WeakMap();
   // A close is marked as soon as the picture starts sinking, so the glance
   // mark coming off afterwards does not play the sink a second time.
+  // Splitting also drops the mark, then immediately rebuilds the tab strip.
+  // The sink waits out that rebuild, or the strip work eats the 0.2s and
+  // the drop looks quicker than a close or an expand.
   const glanceClosing = new WeakSet();
+  let glanceSplitOpen = false;
 
   function glanceTabsOnNormalTabs() {
     return [...gBrowser.tabContainer.querySelectorAll(
@@ -14433,7 +14437,7 @@
   // The real canvas leaves at once, so the opened tab's icon stays clear.
   // Closing passes true: Zen has already hidden the picture, and this copy
   // sinks while the page flies back. The later mark removal must not play it again.
-  function sinkGlanceThumb(glanceTab, closing = false) {
+  function sinkGlanceThumb(glanceTab, closing = false, defer = false) {
     if (!closing && (glanceClosing.has(glanceTab) || glanceTab.style.display === "none")) {
       glanceHost.delete(glanceTab);
       clearGlanceThumb(glanceTab);
@@ -14482,23 +14486,38 @@
       copy.style.filter = "brightness(0.4)";
       card.style.animationDelay = `${GLANCE_THUMB_UNTIP_MS}ms`;
     }
-    content.append(exit);
-    if (fromHover) {
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          card.style.rotate = "";
-          copy.style.filter = "";
-        });
-      });
-    }
     const drop = () => exit.remove();
-    card.addEventListener("animationend", (event) => {
-      if (event.animationName === "zia-glance-sink") {
-        drop();
+    const play = () => {
+      const live = parent.querySelector(":scope > .tab-stack > .tab-content");
+      if (!live?.isConnected) {
+        return;
       }
-    });
-    setTimeout(drop, GLANCE_THUMB_SINK_MS + (fromHover ? GLANCE_THUMB_UNTIP_MS : 0) + 80);
+      live.querySelector(":scope > .zia-glance-thumb-exit")?.remove();
+      card.style.animationPlayState = "running";
+      live.append(exit);
+      if (fromHover) {
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            card.style.rotate = "";
+            copy.style.filter = "";
+          });
+        });
+      }
+      card.addEventListener("animationend", (event) => {
+        if (event.animationName === "zia-glance-sink") {
+          drop();
+        }
+      });
+      setTimeout(drop, GLANCE_THUMB_SINK_MS + (fromHover ? GLANCE_THUMB_UNTIP_MS : 0) + 80);
+    };
+    // held off the tab until the strip has finished moving, so the 0.2s
+    // starts after that work instead of during it
     clearGlanceThumb(glanceTab);
+    if (defer) {
+      requestAnimationFrame(() => requestAnimationFrame(play));
+    } else {
+      play();
+    }
     return true;
   }
 
@@ -14606,6 +14625,26 @@
       closeGlance.ziaGlanceSink = true;
       manager.closeGlance = closeGlance;
     }
+    if (manager?.fullyOpenGlance && !manager.fullyOpenGlance.ziaGlanceSink) {
+      const originalOpen = manager.fullyOpenGlance;
+      const fullyOpenGlance = function (options) {
+        const splitting = !!options?.forSplit;
+        if (splitting) {
+          glanceSplitOpen = true;
+        }
+        try {
+          return originalOpen.call(this, options);
+        } finally {
+          if (splitting) {
+            queueMicrotask(() => {
+              glanceSplitOpen = false;
+            });
+          }
+        }
+      };
+      fullyOpenGlance.ziaGlanceSink = true;
+      manager.fullyOpenGlance = fullyOpenGlance;
+    }
     const photographShowing = () => {
       if (!on() || document.hidden) {
         return;
@@ -14635,7 +14674,9 @@
         if (tab.hasAttribute("zen-glance-tab")) {
           opened = true;
         } else {
-          sinkGlanceThumb(tab);
+          const splitting = glanceSplitOpen;
+          glanceSplitOpen = false;
+          sinkGlanceThumb(tab, false, splitting);
         }
       }
       if (opened) {

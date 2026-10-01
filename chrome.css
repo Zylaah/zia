@@ -5747,7 +5747,7 @@ zen-folder .tab-reset-button {
     rotate: -8deg;
     translate: 0 3px;
     transition: rotate 0.45s cubic-bezier(0.16, 1, 0.3, 1);
-    animation: zia-glance-sink 0.2s ease-in-out both;
+    animation: zia-glance-sink 0.30s ease-in-out both;
   }
 
   & > .zia-glance-thumb-exit-card > .zia-glance-thumb {
