@@ -4,6 +4,22 @@ Every release of Zia, newest first. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.80.3] — 2026-10-01
+
+### Changed
+
+- The Bookmarks, History and Synced Tabs panel's close button is the light
+  grey of the toolbar's icons, like the downloads button.
+- README: Bookmarks and History comes after Split view.
+
+### Fixed
+
+- The downloads button beside the space's name had more room below its
+  icon than above, in its hover background, and sat a little lower than
+  the toolbar's icons beside it: it's a square, the icon in its middle, a touch
+  smaller, level with the toolbar's icons (the toolbar is a pixel taller
+  for it), as in Dia.
+
 ## [2.80.2] — 2026-10-01
 
 ### Fixed

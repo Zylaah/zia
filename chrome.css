@@ -104,7 +104,7 @@
 
   --zia-flyout-border: 1px solid rgba(255, 255, 255, 0.25);
   --zia-card-top-gap: 6px;
-  --zia-toolbar-height: 39px;
+  --zia-toolbar-height: 40px;
   --zia-urlbar-height: 31px;
   --zia-active-tab-bg: rgba(0, 0, 0, 0.1);
   --zia-active-tab-bg-folder: rgba(0, 0, 0, 0.4);
@@ -4468,7 +4468,8 @@ findbar {
 
   position: relative;
 
-  translate: 0 2px;
+  /* level with the toolbar's own icons beside it */
+  translate: 0 1px;
 
   &:hover {
     background-color: var(--zia-space-pill-bg) !important;
@@ -4501,8 +4502,8 @@ findbar {
   }
 
   & > .toolbarbutton-icon {
-    width: 18px !important;
-    height: 18px !important;
+    width: 17px !important;
+    height: 17px !important;
     padding: 0 !important;
     margin: auto !important;
   }
@@ -4525,10 +4526,24 @@ findbar {
   }
 }
 
+/* A square everywhere: as wide as it's tall (the space name's height) */
+#downloads-button {
+  width: var(--zia-space-pill-height) !important;
+  min-width: var(--zia-space-pill-height) !important;
+  max-width: var(--zia-space-pill-height) !important;
+  padding-inline: 0 !important;
+}
+
+/* The icon in the vertical middle of its hover square: drawn a pixel high
+   of it otherwise, more room below it than above */
+#downloads-button > :is(.toolbarbutton-badge-stack, #downloads-indicator-anchor, .toolbarbutton-icon) {
+  translate: 0 1px;
+}
+
 #downloads-indicator-icon {
-  width: 18px !important;
-  height: 18px !important;
-  max-height: 18px !important;
+  width: 17px !important;
+  height: 17px !important;
+  max-height: 17px !important;
   visibility: visible !important;
 
   translate: 0 -1px;
@@ -5793,8 +5808,9 @@ zen-folder .tab-reset-button {
     background-color: transparent !important;
     list-style-image: url("chrome://sine/content/zia/icons/ui/x.svg") !important;
     -moz-context-properties: fill, fill-opacity !important;
-    fill: rgb(255, 255, 255) !important;
-    fill-opacity: 1 !important;
+    /* the light grey of the toolbar's icons (downloads beside the space's
+       name, the panel's opposite number) */
+    fill: var(--toolbarbutton-icon-fill, currentColor) !important;
 
     & > .toolbarbutton-icon {
       width: 16px !important;
