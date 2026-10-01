@@ -5497,3 +5497,111 @@ zen-folder .tab-reset-button {
     list-style-image: url("chrome://sine/content/zia/icons/ui/layout-columns.svg") !important;
   }
 }
+
+/* A glance on a normal tab: a small picture of the page, tipped at an
+ angle like a card set down on the tab and cut off by the tab's bottom
+ edge, as in Dia (zia.uc.js, glance thumbnails), in place of Zen's icon
+ tile. Hovering the tab dims the picture and brings the tab's close button
+ over it; that close shuts the glance first. On unless switched off
+ (zia-glance-thumb-off on the root). */
+:root:not([zia-glance-thumb-off]) .tabbrowser-tab:not([zen-essential]) > .tab-stack > .tab-content > .tabbrowser-tab[zen-glance-tab]:not(#zia-none) {
+  width: 36px !important;
+  min-width: 36px !important;
+  max-width: 36px !important;
+  height: 30px !important;
+  min-height: 30px !important;
+  margin-inline-start: 6px !important;
+  overflow: visible !important;
+  /* the glance itself stays square to the tab, so this cut is level: the
+   picture ends where the tab does, round corners and all (the tab's edges
+   are measured by zia.uc.js; till then, about where they will be) */
+  /* ...just inside the tab's edge line, which so stays whole over it */
+  --zia-glance-edge: calc(var(--zia-shine-width, 1px) + 0.5px);
+  clip-path: inset(
+    calc(var(--zia-glance-cut-top, -2px) + var(--zia-glance-edge))
+    calc(var(--zia-glance-cut-right, -4px) + var(--zia-glance-edge))
+    calc(var(--zia-glance-cut-bottom, -2px) + var(--zia-glance-edge))
+    -12px round calc(var(--zia-tab-radius) - var(--zia-glance-edge))
+  );
+
+  /* taller than the tab has room for, so its foot, corners and all, is
+   always below the cut */
+  & > .tab-stack:not(#zia-none) {
+    position: relative;
+    overflow: visible !important;
+    height: 42px !important;
+    rotate: -8deg;
+    translate: 0 3px;
+    transition: rotate 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  & > .tab-stack > .tab-background {
+    border-radius: 6px !important;
+  }
+
+  /* the picture arrived: the icon and its tile give way to it */
+  &[zia-glance-thumb] > .tab-stack > .tab-background {
+    background: transparent !important;
+    box-shadow: none !important;
+    outline: none !important;
+  }
+
+  &[zia-glance-thumb] .tab-icon-stack {
+    visibility: hidden !important;
+  }
+
+  & > .tab-stack > .zia-glance-thumb {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 6px;
+    box-shadow: 0 0 0 0.5px rgba(255, 255, 255, 0.18), 0 2px 6px rgba(0, 0, 0, 0.5);
+    pointer-events: none;
+  }
+}
+
+:root:not([zia-glance-thumb-off]) .tabbrowser-tab:not([zen-essential]):has(> .tab-stack > .tab-content > .tabbrowser-tab[zen-glance-tab]) > .tab-stack > .tab-content {
+  /* the close button stays just where it always is, and the glance goes
+   before it, centred under it (36px picture, 22px button) */
+  & > .tabbrowser-tab[zen-glance-tab]:not(#zia-none) {
+    order: 1;
+    margin-inline-end: calc((36px + var(--zia-close-size)) / -2) !important;
+  }
+
+  & > .tab-close-button {
+    order: 2;
+    display: flex !important;
+    position: relative;
+    z-index: 1;
+    background-color: transparent !important;
+  }
+
+  & > .tab-close-button:hover {
+    background-color: rgba(255, 255, 255, 0.16) !important;
+  }
+}
+
+/* ...and only while the tab is hovered, as the picture is otherwise bare */
+:root:not([zia-glance-thumb-off]) .tabbrowser-tab:not([zen-essential]):not(:hover):has(> .tab-stack > .tab-content > .tabbrowser-tab[zen-glance-tab]) > .tab-stack > .tab-content > .tab-close-button {
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+/* hovering the tab: the picture tips a little further and dims under the
+ close button */
+:root:not([zia-glance-thumb-off]) .tabbrowser-tab:not([zen-essential]):hover > .tab-stack > .tab-content > .tabbrowser-tab[zen-glance-tab]:not(#zia-none) > .tab-stack:not(#zia-none) {
+  rotate: -16deg;
+}
+
+:root:not([zia-glance-thumb-off]) .tabbrowser-tab:not([zen-essential]):hover > .tab-stack > .tab-content > .tabbrowser-tab[zen-glance-tab] > .tab-stack > .zia-glance-thumb {
+  filter: brightness(0.4);
+}
+
+:root:not([zia-glance-thumb-off]) .tabbrowser-tab[zen-glance-tab] > .tab-stack > .zia-glance-thumb {
+  transition: filter 0.15s ease;
+}
+
+:root[zia-glance-thumb-off] .zia-glance-thumb {
+  display: none !important;
+}

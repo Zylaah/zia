@@ -168,7 +168,7 @@ Covers come from an icon picker Zia adds beside Zen's own: 5,166 [Tabler](https:
 <details>
 <summary>Glance</summary>
 
-[Glance](https://docs.zen-browser.app/user-manual/glance), Zen's link preview (Alt-click a link, or Option-click on macOS), gets its own look. From an essential, a small card springs out from behind it and is sucked back in when you close the glance; from a tab, the glanced site sits as a small tile at the tab's end.
+[Glance](https://docs.zen-browser.app/user-manual/glance), Zen's link preview (Alt-click a link, or Option-click on macOS), gets its own look. From an essential, a small card springs out from behind it and is sucked back in when you close the glance; from a tab, a small picture of the glanced page sits tipped at the tab's end, tucked under its edge. Hover the tab and its close button closes the glance first, then the tab.
 
 <p>
   <img src="https://raw.githubusercontent.com/z1n-k/zia/readme-images/glance-essential.png" alt="A glance card fanned out from an essential" width="49%">
@@ -323,6 +323,7 @@ The first folder takes a little while as the model downloads and the icon names 
 | Hold Cmd/Ctrl to show each tab's number, and go to it by number | on |
 | Tab numbers show all the time | off |
 | Colour of the tab number you type: Zia blue or the space's colour | Zia blue |
+| A glance shows on its tab as a small picture of the page, as in Dia | on |
 | Show the welcome tour after updates that bring something new | on |
 | Show the welcome tour again (turns itself back off) | off |
 | Tab and folder hover cards | on |
