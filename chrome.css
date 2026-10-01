@@ -5822,6 +5822,9 @@ zen-folder .tab-reset-button {
     background: transparent !important;
     border: none !important;
     border-radius: 0 !important;
+    /* (nothing to round off here, and its parting line from the tabs
+       reaches past its top and bottom) */
+    overflow: visible !important;
     margin-block: var(--zia-card-top-gap) var(--zia-card-gap) !important;
   }
 
@@ -5829,6 +5832,16 @@ zen-folder .tab-reset-button {
      order Firefox gives them for where they used to be */
   & :is(#sidebar-box, #sidebar-splitter) {
     order: 0 !important;
+  }
+
+  /* beneath the page's card, which it tucks under as it slides in or out
+     on the tab sidebar's side */
+  & #sidebar-box {
+    z-index: 1;
+  }
+
+  & #zen-appcontent-wrapper {
+    z-index: 3;
   }
 
   /* its sides are the tab sidebar's, mirrored: as far from the window's
@@ -5881,4 +5894,34 @@ zen-folder .tab-reset-button {
 #sidebar-box:not([hidden]) {
   will-change: transform !important;
   backface-visibility: hidden !important;
+}
+
+/* On the same side as the tab sidebar (both left, or both right), the two
+   ran into each other: a hairline parts them, the sidebar's own separator
+   line stood on end. Not when they're on opposite sides, nor when compact
+   mode has the tab sidebar out of the way. */
+:root[zia-panels-beside]:not([zia-panels-plain]):not([zen-compact-mode="true"]) {
+  &:not([zen-right-side="true"]) #sidebar-box:not([sidebar-positionend]),
+  &[zen-right-side="true"] #sidebar-box[sidebar-positionend] {
+    position: relative;
+
+    &::before {
+      content: "";
+      position: absolute;
+      /* the window's full height, through the panel's own gaps above and
+         below, and half as bright as the sidebar's line: a quiet parting */
+      inset-block: calc(-1 * var(--zia-card-top-gap)) calc(-1 * var(--zia-card-gap));
+      width: 1px;
+      background: rgba(255, 255, 255, 0.065);
+      pointer-events: none;
+    }
+  }
+
+  &:not([zen-right-side="true"]) #sidebar-box:not([sidebar-positionend])::before {
+    inset-inline-start: 0;
+  }
+
+  &[zen-right-side="true"] #sidebar-box[sidebar-positionend]::before {
+    inset-inline-end: 0;
+  }
 }
