@@ -5650,3 +5650,181 @@ zen-folder .tab-reset-button {
 :root[zia-glance-thumb-off] .zia-glance-thumb {
   display: none !important;
 }
+
+/* Firefox's own sidebar panels (Bookmarks, History, Synced Tabs: Cmd+B,
+   Cmd+Shift+H, or View > Sidebar), in Zia's look. Beside the page (Zia
+   moves it there, zia-panels-beside on the root) it's a second sidebar,
+   on the window's own background like the tabs; left inside the page's
+   card it's a dark panel parted from the page by a hairline. Either way
+   the header is like a tab card's. What's inside each panel is in
+   zia-sidebar.css, loaded into it by zia.uc.js. Off in Zia's settings
+   (zia-panels-plain on the root). */
+:root:not([zia-panels-plain]) {
+  & #sidebar-box {
+    background: var(--zia-fallback-bg) !important;
+    color: rgba(255, 255, 255, 0.92) !important;
+    color-scheme: dark !important;
+    border: none !important;
+    border-inline-end: 1px solid var(--zia-separator) !important;
+    border-radius: 0 0 0 var(--zia-card-radius) !important;
+    box-shadow: none !important;
+    corner-shape: round !important;
+    overflow: hidden !important;
+  }
+
+  & #sidebar-box[sidebar-positionend] {
+    border-inline-end: none !important;
+    border-inline-start: 1px solid var(--zia-separator) !important;
+    border-radius: 0 0 var(--zia-card-radius) 0 !important;
+  }
+
+  & #sidebar-header {
+    /* the title level with the space's name, and below it the space
+       there is between that name and the essentials (both made up by
+       zia.uc.js) */
+    padding: var(--zia-panel-title-top, 0px) 8px var(--zia-panel-title-pad, 6px) 8px !important;
+    border-bottom: none !important;
+    font-size: var(--zia-text-size) !important;
+  }
+
+  /* the title is a pill like the space name's: its height, padding,
+     rounding and hover colour (#zia-space-label) */
+  & #sidebar-switcher-target {
+    flex: 0 1 auto !important;
+    align-items: center !important;
+    gap: 4px !important;
+    margin: 0 !important;
+    padding: 0 8px !important;
+    height: var(--zia-space-pill-height) !important;
+    min-height: var(--zia-space-pill-height) !important;
+    border: none !important;
+    border-radius: 10px !important;
+    corner-shape: round !important;
+    background: transparent !important;
+    color: inherit !important;
+  }
+
+  & #sidebar-switcher-target:is(:hover, .active, [open]) {
+    background-color: var(--zia-space-pill-bg) !important;
+  }
+
+  /* no icon before the title */
+  & #sidebar-icon {
+    display: none !important;
+  }
+
+  & #sidebar-title {
+    padding: 0 !important;
+    margin: 0 !important;
+    /* the tabs' text, bold as the space name is */
+    font-weight: 600 !important;
+    font-size: var(--zia-text-size) !important;
+  }
+
+  /* tinted with the space's colour, as the space's name is */
+  &[zia-space-colored="true"] #sidebar-title {
+    color: color-mix(in srgb, var(--zen-primary-color, white) var(--zia-space-name-tint), white) !important;
+  }
+
+  /* no arrow after the title either: it's still a button for the menu */
+  & #sidebar-switcher-arrow {
+    display: none !important;
+  }
+
+  /* the close button as the space name's buttons are (downloads): a
+     square pill as tall as the space name's, rounded and hovered alike */
+  & #sidebar-close {
+    appearance: none !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: var(--zia-space-pill-height) !important;
+    min-width: var(--zia-space-pill-height) !important;
+    height: var(--zia-space-pill-height) !important;
+    min-height: var(--zia-space-pill-height) !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    border-radius: 10px !important;
+    corner-shape: round !important;
+    background-color: transparent !important;
+    list-style-image: url("chrome://sine/content/zia/icons/ui/x.svg") !important;
+    -moz-context-properties: fill, fill-opacity !important;
+    fill: rgb(255, 255, 255) !important;
+    fill-opacity: 1 !important;
+
+    & > .toolbarbutton-icon {
+      width: 16px !important;
+      height: 16px !important;
+      padding: 0 !important;
+      background: none !important;
+    }
+  }
+
+  & #sidebar-close:hover {
+    background-color: var(--zia-space-pill-bg) !important;
+  }
+
+  & #sidebar {
+    background: transparent !important;
+  }
+}
+
+/* Beside the page: no panel of its own, just the window's background
+   (and its space colour and blur) as the tab sidebar has, full height
+   from the card's top to its bottom */
+:root[zia-panels-beside]:not([zia-panels-plain]) {
+  & #sidebar-box,
+  & #sidebar-box[sidebar-positionend] {
+    background: transparent !important;
+    border: none !important;
+    border-radius: 0 !important;
+    margin-block: var(--zia-card-top-gap) var(--zia-card-gap) !important;
+  }
+
+  /* laid out in the order Zia put them in, beside the card, not by the
+     order Firefox gives them for where they used to be */
+  & :is(#sidebar-box, #sidebar-splitter) {
+    order: 0 !important;
+  }
+
+  /* its sides are the tab sidebar's, mirrored: as far from the window's
+     edge, and from the page, as the tabs are (measured by zia.uc.js) */
+  & #sidebar-box {
+    box-sizing: border-box !important;
+  }
+
+  & #sidebar-box[sidebar-positionend] {
+    margin-inline: 0 !important;
+    padding-inline: var(--zia-panel-pad-card, 0px) var(--zia-panel-pad-window, var(--zia-card-gap)) !important;
+  }
+
+  & #sidebar-box:not([sidebar-positionend]) {
+    margin-inline: 0 !important;
+    padding-inline: var(--zia-panel-pad-window, var(--zia-card-gap)) var(--zia-panel-pad-card, 0px) !important;
+  }
+
+  /* the header, search field and rows all run to those sides */
+  & #sidebar-header {
+    padding-inline: 0 !important;
+  }
+
+  /* the gap between it and the card, which is also the handle to resize
+     it by */
+  & #sidebar-splitter {
+    width: var(--zia-card-gap) !important;
+    min-width: var(--zia-card-gap) !important;
+    margin: 0 !important;
+    border: none !important;
+    background: transparent !important;
+    opacity: 1 !important;
+  }
+
+  & #zen-appcontent-wrapper:has(+ #sidebar-splitter:not([hidden])) {
+    margin-inline-end: 0 !important;
+  }
+
+  & #sidebar-splitter:not([hidden]) + #zen-appcontent-wrapper {
+    margin-inline-start: 0 !important;
+  }
+}

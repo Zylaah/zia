@@ -186,6 +186,12 @@ Keep a split of two sites as one essential: drag a two-site split onto the essen
 
 </details>
 
+### Bookmarks and History
+
+Firefox's Bookmarks, History and Synced Tabs panels become a second sidebar on the other side of the page, full height on the window's own background. They're measured off your tabs, so the text, rows, spacing and highlights are the tabs' own, and the title takes your space's colour. Open them with **Cmd+B** (Bookmarks), **Cmd+Shift+H** (History), or **View > Sidebar**, and drag the gap beside the page to resize.
+
+![The Bookmarks panel as a second sidebar beside the page](https://raw.githubusercontent.com/z1n-k/zia/readme-images/sidebar-panels.webp)
+
 ### Glass
 
 The compact sidebar, the hover cards and the address pop-up are frosted glass: slightly see-through, with the page blurred behind them. Each can be switched back to solid.
@@ -324,6 +330,8 @@ The first folder takes a little while as the model downloads and the icon names 
 | Tab numbers show all the time | off |
 | Colour of the tab number you type: Zia blue or the space's colour | Zia blue |
 | A glance shows on its tab as a small picture of the page, as in Dia | on |
+| Bookmarks, History and Synced Tabs panels in Zia's look | on |
+| Bookmarks, History and Synced Tabs panels beside the page, full height, as a second sidebar | on |
 | Show the welcome tour after updates that bring something new | on |
 | Show the welcome tour again (turns itself back off) | off |
 | Tab and folder hover cards | on |
