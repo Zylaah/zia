@@ -455,4 +455,98 @@
     window.addEventListener("unload", () => Services.prefs.removeObserver(SIDEBAR_BESIDE_PREF, place));
     // moving it to the other side
     new MutationObserver(place).observe(box, { attributes: true, attributeFilter: ["sidebar-positionend"] });
+
+    // It slides in from the window's edge as it opens, the page giving way
+    // to it, and back out as it closes: exactly as Zen slides the tab
+    // sidebar (its outer margin, from minus its width to nothing, with
+    // Zen's own spring: no bounce, a tenth of a second)
+    const beside = () => Services.prefs.getBoolPref(SIDEBAR_BESIDE_PREF, true) && !matchMedia("(prefers-reduced-motion: reduce)").matches;
+    let slides = 0;
+    const sliding = (on) => {
+      slides = Math.max(0, slides + (on ? 1 : -1));
+      // a little after it stops, as the site catches up with its new size
+      if (slides) {
+        setFlag("zia-panel-sliding", true);
+      } else {
+        setTimeout(() => !slides && setFlag("zia-panel-sliding", false), 250);
+      }
+    };
+    // the tab sidebar's own slide too: Zen marks it while it runs, and the
+    // colour is held a moment after, as the site catches up
+    let zenSliding = false;
+    new MutationObserver(() => {
+      const now = document.documentElement.hasAttribute("zen-compact-animating");
+      if (now !== zenSliding) {
+        zenSliding = now;
+        sliding(now);
+      }
+    }).observe(document.documentElement, { attributes: true, attributeFilter: ["zen-compact-animating"] });
+    const slide = (opening) => {
+      const run = slideBox(opening);
+      sliding(true);
+      return run.finally(() => sliding(false));
+    };
+    const slideBox = (opening) => {
+      const side = box.hasAttribute("sidebar-positionend") ? "marginRight" : "marginLeft";
+      const hidden = `-${box.getBoundingClientRect().width}px`;
+      const motion = window.gZenUIManager?.motion;
+      const done = () => box.style.removeProperty(side === "marginRight" ? "margin-right" : "margin-left");
+      if (motion?.animate) {
+        box.style[side] = opening ? hidden : "0px";
+        return Promise.resolve(
+          motion.animate(box, { [side]: opening ? [hidden, "0px"] : ["0px", hidden] }, {
+            ease: opening ? "easeOut" : "easeIn",
+            type: "spring",
+            bounce: 0,
+            duration: 0.1,
+          })
+        ).then(() => {
+          if (opening) {
+            done();
+          }
+          return done;
+        });
+      }
+      const run = box.animate([{ [side]: opening ? hidden : "0px" }, { [side]: opening ? "0px" : hidden }], {
+        duration: 100,
+        easing: opening ? "ease-out" : "ease-in",
+        fill: "forwards",
+      });
+      return run.finished.catch(() => {}).then(() => () => run.cancel());
+    };
+    let wasHidden = box.hidden;
+    new MutationObserver(() => {
+      if (wasHidden && !box.hidden && beside()) {
+        slide(true).catch((err) => noteError("sidebar panels: slide in", err));
+      }
+      wasHidden = box.hidden;
+    }).observe(box, { attributes: true, attributeFilter: ["hidden"] });
+
+    // closing: slid out first, then hidden as Firefox would have
+    const controller = window.SidebarController;
+    if (controller && typeof controller.hide === "function" && !controller.ziaSlides) {
+      const hide = controller.hide;
+      let sliding = false;
+      controller.hide = function (...args) {
+        if (sliding || box.hidden || !beside()) {
+          return hide.apply(this, args);
+        }
+        sliding = true;
+        slide(false)
+          .catch((err) => {
+            noteError("sidebar panels: slide out", err);
+            return () => {};
+          })
+          .then((undo) => {
+            sliding = false;
+            try {
+              hide.apply(this, args);
+            } finally {
+              undo?.();
+            }
+          });
+        return undefined;
+      };
+      controller.ziaSlides = true;
+    }
   }
